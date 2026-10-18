@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SA SHADOW HUB // Creator & Developer Utilities</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0B0C10',
+                        panelbg: '#151821',
+                        bordercol: '#242938',
+                        nativeRed: '#FF2A5F',
+                        extCyan: '#00F0FF',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            font-size: 17px; 
+            background-color: #0B0C10;
+            color: #E2E8F0;
+        }
+        .tech-font { font-family: 'JetBrains Mono', monospace; }
+        
+        .cyber-card {
+            background: #151821;
+            border: 2px solid #242938;
+            border-radius: 18px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .cyber-card:hover {
+            border-color: #FF2A5F;
+            transform: translateY(-4px);
+            box-shadow: 0 14px 35px -10px rgba(255, 42, 95, 0.4);
+        }
+        
+        .sword-circle-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0B0C10;
+            border: 2px solid #333B4E;
+            color: #64748B;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .sword-circle-btn:hover {
+            border-color: #FF2A5F;
+            color: #FF2A5F;
+            box-shadow: 0 0 15px rgba(255, 42, 95, 0.35);
+        }
+        .sword-circle-btn.active {
+            background: rgba(255, 42, 95, 0.15);
+            border-color: #FF2A5F;
+            color: #FF2A5F;
+            box-shadow: 0 0 25px rgba(255, 42, 95, 0.6);
+        }
+
+        .ai-markdown h1, .ai-markdown h2, .ai-markdown h3 { font-weight: 800; color: #FFFFFF; margin-top: 14px; margin-bottom: 8px; font-size: 1.15em; }
+        .ai-markdown strong { color: #FF2A5F; font-weight: 800; }
+        .ai-markdown ul { list-style-type: disc; padding-left: 22px; margin-top: 8px; margin-bottom: 8px; }
+        .ai-markdown code { background: #0B0C10; color: #00F0FF; padding: 3px 7px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; }
+        .ai-markdown pre { background: #0B0C10; padding: 14px; border-radius: 10px; border: 1px solid #242938; overflow-x: auto; margin-top: 10px; margin-bottom: 10px; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0B0C10; }
+        ::-webkit-scrollbar-thumb { background: #242938; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF2A5F; }
+    </style>
+</head>
+<body class="min-h-screen selection:bg-nativeRed selection:text-white flex flex-col justify-between">
+
+    <!-- FIRST-TIME ONBOARDING MODAL -->
+    <div id="onboardingModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-panelbg border-2 border-nativeRed p-8 md:p-10 rounded-2xl max-w-xl w-full shadow-2xl relative">
+            <div class="inline-block bg-nativeRed text-white font-black px-4 py-1 text-sm uppercase tracking-wider rounded-md tech-font mb-4">
+                SYSTEM ACCESS PROTOCOL
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black text-white mb-3 tracking-tight">WELCOME, OPERATOR</h2>
+            <p class="text-gray-300 text-base mb-8 leading-relaxed">Initialize your profile parameters to tailor your SA Shadow Hub workspace.</p>
+            
+            <form id="onboardingForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm uppercase font-bold tech-font text-nativeRed mb-2">OPERATOR NAME / ALIAS</label>
+                    <input type="text" id="userName" required class="w-full bg-darkbg border-2 border-bordercol rounded-xl p-4 text-white text-lg focus:border-nativeRed outline-none transition" placeholder="Enter your name (e.g. Ezhil)">
+                </div>
+                <div>
+                    <label class="block text-sm uppercase font-bold tech-font text-nativeRed mb-2">PRIMARY DOMAIN</label>
+                    <select id="userInterest" class="w-full bg-darkbg border-2 border-bordercol rounded-xl p-4 text-white text-lg focus:border-nativeRed outline-none transition">
+                        <option value="editing">Video & Graphic Editing</option>
+                        <option value="music">Music & Media Production</option>
+                        <option value="coding">Software & Web Development</option>
+                        <option value="ai">AI Lab & Utilities</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm uppercase font-bold tech-font text-nativeRed mb-2">DISCOVERY SOURCE</label>
+                    <input type="text" id="userSource" class="w-full bg-darkbg border-2 border-bordercol rounded-xl p-4 text-white text-lg focus:border-nativeRed outline-none transition" placeholder="How did you find SA Hub?">
+                </div>
+                <!-- ONBOARDING SUBMIT BUTTON -->
+                <button type="submit" id="initBtn" class="w-full bg-nativeRed text-white font-black py-4 text-lg uppercase tracking-wider rounded-xl tech-font hover:bg-rose-600 transition shadow-lg shadow-nativeRed/30 cursor-pointer">
+                    INITIALIZE SYSTEM ➔
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="border-b-2 border-bordercol bg-darkbg/95 sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-24 flex items-center justify-between">
+            
+            <!-- BRAND LOGO -->
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-nativeRed rounded-2xl flex items-center justify-center font-black text-white text-2xl tech-font shadow-lg shadow-nativeRed/40 border border-white/20">
+                    SA
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black text-white tracking-wider">SA SHADOW HUB</h1>
+                    <p class="text-xs text-gray-400 font-bold tracking-widest uppercase tech-font">UNRESTRICTED UTILITIES</p>
+                </div>
+            </div>
+
+            <!-- SEARCH BAR -->
+            <div class="hidden lg:flex items-center bg-panelbg border-2 border-bordercol px-5 py-3 rounded-2xl w-80 focus-within:border-nativeRed transition">
+                <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3 text-lg"></i>
+                <input type="text" id="searchInput" placeholder="Search systems, codecs, scripts..." class="bg-transparent border-none outline-none text-base w-full text-white placeholder-gray-500 font-medium">
+            </div>
+
+            <!-- NAV ACTION BUTTONS -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <button type="button" id="hubSystemsBtn" onclick="switchTab('all')" class="text-sm font-bold uppercase tracking-wider px-4 sm:px-5 py-3 bg-panelbg border-2 border-bordercol hover:border-nativeRed rounded-xl transition text-white cursor-pointer">
+                    Hub Systems
+                </button>
+                <button type="button" id="vaultBtn" onclick="switchTab('favorites')" class="text-sm font-bold uppercase tracking-wider px-4 sm:px-5 py-3 bg-panelbg border-2 border-bordercol hover:border-nativeRed transition flex items-center gap-2 sm:gap-3 rounded-xl text-white cursor-pointer">
+                    <i class="fa-solid fa-shield-halved text-gray-400 text-lg" id="navSwordIcon"></i> 
+                    <span>Vault (<span id="favCount" class="text-nativeRed font-black">0</span>)</span>
+                </button>
+
+                <!-- USER GREETING & OWNER BADGE -->
+                <div class="hidden md:flex items-center gap-3">
+                    <div id="userGreeting" class="text-sm font-extrabold text-nativeRed border-2 border-nativeRed/40 px-4 py-2.5 rounded-xl bg-nativeRed/10 tech-font uppercase"></div>
+                    
+                    <!-- GREEN OWNER BADGE -->
+                    <div class="flex items-center gap-2 bg-emerald-500/10 border-2 border-emerald-500/50 text-emerald-400 px-3.5 py-2.5 rounded-xl tech-font text-xs font-black uppercase shadow-lg shadow-emerald-500/20">
+                        <i class="fa-solid fa-shield-check text-emerald-400 text-sm"></i>
+                        <span>OWNER: SA.EZHIL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-10 flex-grow w-full">
+
+        <!-- HERO SECTION -->
+        <section class="mb-12 border-2 border-bordercol bg-panelbg p-8 sm:p-10 rounded-3xl relative overflow-hidden shadow-2xl">
+            <div class="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-nativeRed/15 to-transparent pointer-events-none"></div>
+            
+            <div class="inline-block text-sm font-bold text-nativeRed uppercase tracking-widest bg-nativeRed/10 px-4 py-1.5 rounded-lg border border-nativeRed/30 tech-font mb-4">
+                v2.5 // DEPLOYED UTILITIES
+            </div>
+            
+            <h2 class="text-3xl sm:text-5xl font-black text-white mb-4 tracking-tight leading-tight">
+                HIGH-SPEED CREATOR & DEV HUB
+            </h2>
+            <p class="text-gray-300 max-w-3xl text-base sm:text-lg mb-8 leading-relaxed font-normal">
+                Curated workspace designed by SA.EZHIL. Features direct client-side execution, ad-free media streaming, and custom editing utilities running directly inside high-performance sandboxed environments.
+            </p>
+            
+            <!-- CATEGORY FILTER BUTTONS -->
+            <div id="categoryFilters" class="flex flex-wrap gap-3">
+                <button type="button" id="btnFilterAll" onclick="filterCategory('all')" class="cat-btn active px-6 py-3 text-sm font-extrabold uppercase bg-nativeRed text-white rounded-xl shadow-lg shadow-nativeRed/30 tech-font cursor-pointer">All Systems</button>
+                <button type="button" id="btnFilterEditing" onclick="filterCategory('editing')" class="cat-btn px-6 py-3 text-sm font-extrabold uppercase bg-darkbg border-2 border-bordercol text-gray-300 hover:border-nativeRed rounded-xl transition tech-font cursor-pointer">Editing</button>
+                <button type="button" id="btnFilterMusic" onclick="filterCategory('music')" class="cat-btn px-6 py-3 text-sm font-extrabold uppercase bg-darkbg border-2 border-bordercol text-gray-300 hover:border-nativeRed rounded-xl transition tech-font cursor-pointer">Music & Media</button>
+                <button type="button" id="btnFilterCoding" onclick="filterCategory('coding')" class="cat-btn px-6 py-3 text-sm font-extrabold uppercase bg-darkbg border-2 border-bordercol text-gray-300 hover:border-nativeRed rounded-xl transition tech-font cursor-pointer">Code Lab</button>
+                <button type="button" id="btnFilterAI" onclick="filterCategory('ai')" class="cat-btn px-6 py-3 text-sm font-extrabold uppercase bg-darkbg border-2 border-bordercol text-gray-300 hover:border-nativeRed rounded-xl transition tech-font cursor-pointer">AI Lab</button>
+            </div>
+        </section>
+
+        <!-- DYNAMIC AI LAB STUDIO CONTAINER -->
+        <section id="aiStudioContainer" class="mb-12 hidden">
+            <div class="border-2 border-nativeRed/50 bg-panelbg p-8 rounded-3xl shadow-2xl relative">
+                <div class="flex items-center justify-between mb-8 pb-4 border-b border-bordercol">
+                    <div class="flex items-center gap-3">
+                        <span class="w-4 h-4 bg-nativeRed rounded-full animate-ping"></span>
+                        <h3 class="text-2xl sm:text-3xl font-black text-white uppercase tracking-wider">
+                            AI LAB // CREATOR STUDIO
+                        </h3>
+                    </div>
+                    <span class="text-xs font-bold bg-nativeRed/20 text-nativeRed px-3 py-1.5 rounded-lg border border-nativeRed/40 tech-font">
+                        POWERED BY GEMINI AI
+                    </span>
+                </div>
+
+                <!-- AI STUDIO MODULE SELECTION -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div onclick="setAiMode('text')" id="modeTextBtn" class="cyber-card p-6 cursor-pointer border-nativeRed bg-nativeRed/10">
+                        <i class="fa-solid fa-code text-3xl text-nativeRed mb-3"></i>
+                        <h4 class="text-xl font-bold text-white mb-1">Code & Script Assistant</h4>
+                        <p class="text-xs text-gray-300">Generate, refactor & debug scripts with Gemini 3 Flash.</p>
+                    </div>
+
+                    <div onclick="setAiMode('image')" id="modeImageBtn" class="cyber-card p-6 cursor-pointer">
+                        <i class="fa-solid fa-wand-magic-sparkles text-3xl text-extCyan mb-3"></i>
+                        <h4 class="text-xl font-bold text-white mb-1">Media & Graphic Studio</h4>
+                        <p class="text-xs text-gray-300">Synthesize visual assets using Gemini 3.1 Flash Image.</p>
+                    </div>
+
+                    <div onclick="setAiMode('audio')" id="modeAudioBtn" class="cyber-card p-6 cursor-pointer">
+                        <i class="fa-solid fa-microphone-lines text-3xl text-amber-400 mb-3"></i>
+                        <h4 class="text-xl font-bold text-white mb-1">Voice & Audio Engine</h4>
+                        <p class="text-xs text-gray-300">Generate studio speech audio with Gemini 2.5 Flash TTS.</p>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC INTERACTIVE AI WORKSPACE -->
+                <div class="bg-darkbg p-6 border-2 border-bordercol rounded-2xl">
+                    <div id="aiTextModule" class="space-y-4">
+                        <label class="block text-sm font-extrabold text-nativeRed uppercase tech-font">ENTER CODE, SCRIPT OR DEV QUERY</label>
+                        <textarea id="aiPromptInput" rows="4" class="w-full bg-panelbg border-2 border-bordercol rounded-xl p-4 text-white text-base focus:border-nativeRed outline-none transition" placeholder="e.g. Write a high performance JavaScript video frame cache function..."></textarea>
+                        
+                        <div class="flex justify-end">
+                            <button type="button" onclick="runAiTextGeneration()" id="generateTextBtn" class="bg-nativeRed text-white font-extrabold px-8 py-4 rounded-xl tech-font uppercase hover:bg-rose-600 transition flex items-center gap-3 cursor-pointer">
+                                <i class="fa-solid fa-bolt"></i> RUN GEMINI ASSISTANT
+                            </button>
+                        </div>
+
+                        <!-- OUTPUT PREVIEW WITH READ ALOUD BUTTON -->
+                        <div id="aiTextResultContainer" class="mt-6 hidden">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-gray-400 uppercase tech-font">RESPONSE / CODE OUTPUT</span>
+                                <button type="button" onclick="readAloudOutput()" id="readAloudBtn" class="px-4 py-2 bg-panelbg border-2 border-bordercol hover:border-nativeRed rounded-xl text-xs font-bold text-white flex items-center gap-2 transition tech-font cursor-pointer">
+                                    <i class="fa-solid fa-volume-high text-nativeRed"></i> <span>READ ALOUD</span>
+                                </button>
+                            </div>
+                            <div id="aiTextResult" class="bg-panelbg border-2 border-bordercol p-6 rounded-xl text-gray-200 text-base ai-markdown leading-relaxed"></div>
+                        </div>
+                    </div>
+
+                    <!-- IMAGE MODULE -->
+                    <div id="aiImageModule" class="space-y-4 hidden">
+                        <label class="block text-sm font-extrabold text-extCyan uppercase tech-font">IMAGE / ARTWORK GENERATION PROMPT</label>
+                        <textarea id="aiImagePromptInput" rows="3" class="w-full bg-panelbg border-2 border-bordercol rounded-xl p-4 text-white text-base focus:border-extCyan outline-none transition" placeholder="e.g. A futuristic cybernetic studio with neon red lighting and 8k render details..."></textarea>
+                        
+                        <div class="flex justify-end">
+                            <button type="button" onclick="runAiImageGeneration()" id="generateImgBtn" class="bg-extCyan text-black font-extrabold px-8 py-4 rounded-xl tech-font uppercase hover:bg-cyan-300 transition flex items-center gap-3 cursor-pointer">
+                                <i class="fa-solid fa-image"></i> GENERATE ASSET
+                            </button>
+                        </div>
+
+                        <div id="aiImageResultContainer" class="mt-6 hidden">
+                            <span class="text-xs font-bold text-gray-400 uppercase tech-font block mb-2">SYNTHESIZED GRAPHIC</span>
+                            <div class="bg-panelbg border-2 border-bordercol p-4 rounded-xl flex justify-center">
+                                <img id="aiImageResult" src="" alt="AI Output" class="max-h-96 rounded-lg object-contain">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AUDIO MODULE -->
+                    <div id="aiAudioModule" class="space-y-4 hidden">
+                        <label class="block text-sm font-extrabold text-amber-400 uppercase tech-font">TEXT TO SPEECH / VOICE SYNTHESIS</label>
+                        <textarea id="aiAudioPromptInput" rows="3" class="w-full bg-panelbg border-2 border-bordercol rounded-xl p-4 text-white text-base focus:border-amber-400 outline-none transition" placeholder="Say cheerfully: Welcome back Operator Ezhil to SA Shadow Hub!"></textarea>
+                        
+                        <div class="flex justify-end">
+                            <button type="button" onclick="runAiAudioGeneration()" id="generateAudioBtn" class="bg-amber-400 text-black font-extrabold px-8 py-4 rounded-xl tech-font uppercase hover:bg-amber-300 transition flex items-center gap-3 cursor-pointer">
+                                <i class="fa-solid fa-volume-high"></i> GENERATE SPEECH
+                            </button>
+                        </div>
+
+                        <div id="aiAudioResultContainer" class="mt-6 hidden">
+                            <span class="text-xs font-bold text-gray-400 uppercase tech-font block mb-2">SPEECH AUDIO PLAYER</span>
+                            <div class="bg-panelbg border-2 border-bordercol p-4 rounded-xl flex justify-center">
+                                <audio id="aiAudioResult" controls class="w-full"></audio>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- DYNAMIC TOOLS GRID -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-bordercol">
+                <h3 id="sectionTitle" class="text-2xl font-black text-white flex items-center gap-3 tracking-wide">
+                    <span class="w-3.5 h-3.5 bg-nativeRed rounded-full inline-block"></span> RECOMMENDED UTILITIES
+                </h3>
+                <span id="toolCount" class="text-sm font-bold text-gray-400 tech-font">0 items loaded</span>
+            </div>
+            
+            <div id="toolsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Dynamic Cards Rendered via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- LARGE POPUP MODAL -->
+    <div id="toolModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4 sm:p-6 hidden">
+        <div class="bg-panelbg border-2 border-bordercol rounded-3xl max-w-5xl w-full grid grid-cols-1 md:grid-cols-12 overflow-hidden relative shadow-2xl max-h-[92vh] overflow-y-auto">
+            
+            <!-- CLOSE POPUP BUTTON -->
+            <button type="button" id="closeModalBtn" onclick="closeModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white z-20 w-11 h-11 rounded-full bg-darkbg border-2 border-bordercol flex items-center justify-center transition hover:border-nativeRed cursor-pointer">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            
+            <!-- Modal Left Side -->
+            <div class="md:col-span-5 p-8 bg-darkbg/70 border-b md:border-b-0 md:border-r-2 border-bordercol flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <span id="modalBadge" class="text-xs tech-font uppercase px-3 py-1.5 font-extrabold rounded-lg"></span>
+                        <span id="modalCategory" class="text-xs font-bold text-gray-400 uppercase tech-font"></span>
+                    </div>
+
+                    <div class="h-56 bg-bordercol/30 border-2 border-bordercol rounded-2xl overflow-hidden mb-6 relative">
+                        <img id="modalImg" src="" alt="Tool preview" class="w-full h-full object-cover">
+                    </div>
+
+                    <h3 id="modalTitle" class="text-2xl sm:text-3xl font-black text-white mb-4 leading-tight"></h3>
+                </div>
+
+                <!-- SWORD ICON FAVORITE TOGGLE BUTTON -->
+                <div class="flex items-center justify-between bg-panelbg border-2 border-bordercol p-4 rounded-2xl mt-4">
+                    <div class="pr-2">
+                        <span id="swordVaultHeading" class="text-sm font-extrabold text-white block uppercase">ADD TO FAVORITE LIST</span>
+                        <span id="swordVaultLabel" class="text-xs text-gray-400 font-medium">Click icon to toggle in favorites</span>
+                    </div>
+                    <button type="button" id="swordToggleBtn" onclick="toggleFavoriteCurrent()" class="sword-circle-btn flex-shrink-0 cursor-pointer" title="Add to Favorite List">
+                        <i class="fa-solid fa-shield-halved text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Right Side -->
+            <div class="md:col-span-7 p-8 sm:p-10 flex flex-col justify-between bg-panelbg">
+                <div>
+                    <h4 class="text-xs uppercase font-extrabold tech-font text-nativeRed tracking-widest mb-3">SYSTEM SPECIFICATIONS & OVERVIEW</h4>
+                    <p id="modalDesc" class="text-gray-200 text-base sm:text-lg mb-8 leading-relaxed font-normal"></p>
+                    
+                    <div class="bg-darkbg p-5 border-2 border-bordercol rounded-2xl mb-8">
+                        <span class="text-xs uppercase font-bold tech-font text-gray-400 block mb-2">ARCHITECTURE & CODEC LOGS</span>
+                        <p id="modalTech" class="text-sm text-gray-300 font-mono leading-normal"></p>
+                    </div>
+                </div>
+
+                <!-- LAUNCH WORKSPACE BUTTON -->
+                <div>
+                    <button type="button" id="modalLaunchBtn" onclick="launchWorkspaceInApp()" class="w-full bg-nativeRed text-white font-black py-4 sm:py-5 text-lg uppercase tracking-wider rounded-2xl hover:bg-rose-600 transition text-center shadow-xl shadow-nativeRed/30 flex items-center justify-center gap-3 cursor-pointer">
+                        <i class="fa-solid fa-play"></i> START WORKSPACE
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FULLSCREEN WORKSPACE RUNNER (IFRAME) -->
+    <div id="iframeRunner" class="fixed inset-0 z-50 bg-black flex flex-col hidden">
+        <div class="bg-panelbg border-b-2 border-bordercol px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <span class="w-3.5 h-3.5 bg-green-500 rounded-full animate-pulse"></span>
+                <div>
+                    <h3 id="iframeTitle" class="text-lg font-black text-white uppercase">WORKSPACE RUNNER</h3>
+                    <p id="iframeUrl" class="text-xs text-gray-400 font-mono"></p>
+                </div>
+            </div>
+            <div>
+                <!-- EXIT WORKSPACE BUTTON -->
+                <button type="button" id="exitIframeBtn" onclick="closeIframeRunner()" class="px-5 py-2.5 bg-nativeRed text-white rounded-xl text-xs font-black uppercase tracking-wider hover:bg-rose-600 transition flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm"></i> Exit Workspace
+                </button>
+            </div>
+        </div>
+        <div class="flex-grow w-full relative bg-darkbg">
+            <iframe id="appIframe" class="w-full h-full border-none" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t-2 border-bordercol bg-darkbg py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm font-extrabold text-gray-300 tech-font tracking-wide uppercase">
+                SA.STUDIO // BUILT BY SA.EZHIL FROM SA.STUDIO // ezhilarasangaming321@gmail.com 
+            </p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const toolsData = [
+            {
+                id: "sa-music",
+                title: "SA-Music Engine",
+                category: "music",
+                tags: ["music", "audio", "ad-free", "stream"],
+                isNative: true,
+                badge: "SA.STUDIO : DEV",
+                image: "SA Music Studio Branding.png",
+                description: "Ad-free streaming workspace with built-in high bit-rate audio playback engines and media visualizers.",
+                tech: "Architecture: HTML5 Audio API / Custom Sandboxed Engine",
+                iframeUrl: "music.html" 
+            },
+            {
+                id: "photopea",
+                title: "Photopea Graphics Suite",
+                category: "editing",
+                tags: ["editing", "photo", "psd", "vector"],
+                isNative: false,
+                badge: "EXTERNAL UTILITY",
+                image: "Photopea.png",
+                description: "Full-fledged raster and vector graphics editor capable of opening PSD, AI, Sketch, and XCF files directly in browser.",
+                tech: "Architecture: WebAssembly / HTML5 Canvas / External Integration",
+                iframeUrl: "https://www.photopea.com"
+            },
+            {
+                id: "sa-code-lab",
+                title: "SA-Code LEARNING PAGE",
+                category: "coding",
+                tags: ["code", "compiler", "javascript", "python"],
+                isNative: true,
+                badge: "SA.STUDIO : DEV",
+                image: "Gemini_Generated_Image_pgufrspgufrspguf.png",
+                description: "Lightning-fast client-side code runner supporting JavaScript, HTML5, and live web preview testing. cod Learnig game's and experience certificate",
+                tech: "Architecture: experience certificate / Web Worker Execution",
+                iframeUrl: "https://ezhilarasangaming321-wq.github.io/"
+            },
+            {
+                id: "Polarr EDITOR",
+                title: "Polarr EDITOR Studio",
+                category: "editing",
+                tags: ["editing", "photo", "Polarr",],
+                isNative: false,
+                badge: "EXTERNAL UTILITY",
+                image: "Polarr.PNG",
+                description: "Polarr is a professional-grade photo editing suite known for its advanced AI-driven tools and cross-platform availability.",
+                tech: "Architecture:Built using C++ (via WebAssembly) and WebGL for high-performance GPU image processing, with a React/TypeScript frontend.",
+                iframeUrl: "Polarr.html"
+            },
+            {
+                id: "CSS Generator",
+                title: "CSS Generator",
+                category: "coding",
+                tags: ["coding", "cod", "css"],
+                isNative: false,
+                badge: "EXTERNAL UTILITY",
+                image: "CSS.PNG",
+                description: "A quick and easy tool to design custom linear and radial color gradients with real-time visual previews. Customize colors, angles, and color stops, then copy the ready-to-use CSS code with a single click.",
+                tech: "Architecture: Built with HTML, CSS, and JavaScript using event listeners to dynamically construct gradient strings and the navigator.clipboard API to copy the output.",
+                iframeUrl: "SVG.html"
+            },
+        ];
+
+        let favorites = JSON.parse(localStorage.getItem('sa_favorites')) || [];
+        let currentActiveTab = 'all';
+        let currentSelectedTool = null;
+        let lastGeneratedText = '';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('sa_user');
+            if (!savedUser) {
+                document.getElementById('onboardingModal').classList.remove('hidden');
+            } else {
+                const user = JSON.parse(savedUser);
+                document.getElementById('userGreeting').innerText = `OP: ${user.name.toUpperCase()}`;
+            }
+            renderTools(toolsData);
+            updateFavCount();
+        });
+
+        document.getElementById('onboardingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('userName').value;
+            const interest = document.getElementById('userInterest').value;
+            const source = document.getElementById('userSource').value;
+            
+            localStorage.setItem('sa_user', JSON.stringify({ name, interest, source }));
+            document.getElementById('onboardingModal').classList.add('hidden');
+            document.getElementById('userGreeting').innerText = `OP: ${name.toUpperCase()}`;
+            filterCategory(interest);
+        });
+
+        function renderTools(data, title = "RECOMMENDED UTILITIES") {
+            document.getElementById('sectionTitle').innerHTML = `<span class="w-3.5 h-3.5 bg-nativeRed rounded-full inline-block"></span> ${title}`;
+            document.getElementById('toolCount').innerText = `${data.length} items loaded`;
+            
+            const grid = document.getElementById('toolsGrid');
+            grid.innerHTML = '';
+
+            if(data.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-16 text-center text-gray-400 font-bold tech-font text-lg">NO SYSTEMS FOUND IN THIS SECTOR.</div>`;
+                return;
+            }
+
+            data.forEach(tool => {
+                const isFav = favorites.includes(tool.id);
+                const badgeColor = tool.isNative ? 'bg-nativeRed/20 text-nativeRed border border-nativeRed/40' : 'bg-extCyan/20 text-extCyan border border-extCyan/40';
+                
+                const card = document.createElement('div');
+                card.className = `cyber-card p-6 flex flex-col justify-between cursor-pointer relative group`;
+                card.onclick = () => openModal(tool.id);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs tech-font uppercase px-3 py-1 font-extrabold rounded-md ${badgeColor}">${tool.badge}</span>
+                            <button type="button" onclick="event.stopPropagation(); toggleFavorite('${tool.id}')" class="text-gray-400 hover:text-nativeRed transition text-xl cursor-pointer">
+                                <i class="fa-solid fa-shield-halved ${isFav ? 'text-nativeRed' : ''}"></i>
+                            </button>
+                        </div>
+                        <div class="h-44 bg-darkbg border-2 border-bordercol rounded-2xl overflow-hidden mb-4 relative">
+                            <img src="${tool.image}" alt="${tool.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        </div>
+                        <h4 class="text-xl font-extrabold text-white mb-2 leading-snug">${tool.title}</h4>
+                        <p class="text-gray-300 text-sm line-clamp-2 leading-relaxed">${tool.description}</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-bordercol flex items-center justify-between text-xs tech-font font-bold text-gray-400">
+                        <span class="uppercase">SECTOR: ${tool.category}</span>
+                        <span class="text-nativeRed group-hover:translate-x-1 transition text-sm">LAUNCH ➔</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.classList.remove('bg-nativeRed', 'text-white', 'shadow-lg', 'shadow-nativeRed/30');
+                btn.classList.add('bg-darkbg', 'text-gray-300');
+            });
+            
+            const targetBtn = Array.from(document.querySelectorAll('.cat-btn')).find(btn => btn.innerText.toLowerCase().includes(cat === 'ai' ? 'ai lab' : cat));
+            if(targetBtn) {
+                targetBtn.classList.remove('bg-darkbg', 'text-gray-300');
+                targetBtn.classList.add('bg-nativeRed', 'text-white', 'shadow-lg', 'shadow-nativeRed/30');
+            }
+
+            currentActiveTab = cat;
+            const aiStudio = document.getElementById('aiStudioContainer');
+
+            if(cat === 'ai') {
+                aiStudio.classList.remove('hidden');
+                const filtered = toolsData.filter(t => t.category === 'ai');
+                renderTools(filtered, "AI LAB // DEPLOYED UTILITIES");
+            } else {
+                aiStudio.classList.add('hidden');
+                if(cat === 'all') {
+                    renderTools(toolsData, "ALL DEPLOYED SYSTEMS");
+                } else {
+                    const filtered = toolsData.filter(t => t.category === cat);
+                    renderTools(filtered, `${cat.toUpperCase()} SECTOR`);
+                }
+            }
+        }
+
+        function switchTab(tab) {
+            document.getElementById('aiStudioContainer').classList.add('hidden');
+            if(tab === 'favorites') {
+                const favTools = toolsData.filter(t => favorites.includes(t.id));
+                renderTools(favTools, "SWORD VAULT // FAVORITES");
+            } else {
+                filterCategory('all');
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const searched = toolsData.filter(t => 
+                t.title.toLowerCase().includes(query) || 
+                t.description.toLowerCase().includes(query) ||
+                t.tags.some(tag => tag.includes(query))
+            );
+            renderTools(searched, `RESULTS FOR: "${query}"`);
+        });
+
+        function openModal(id) {
+            const tool = toolsData.find(t => t.id === id);
+            if(!tool) return;
+            currentSelectedTool = tool;
+
+            document.getElementById('modalTitle').innerText = tool.title;
+            document.getElementById('modalDesc').innerText = tool.description;
+            document.getElementById('modalTech').innerText = tool.tech;
+            document.getElementById('modalImg').src = tool.image;
+            document.getElementById('modalCategory').innerText = `Sector: ${tool.category}`;
+            
+            const badge = document.getElementById('modalBadge');
+            badge.innerText = tool.badge;
+            badge.className = `text-xs tech-font uppercase px-3 py-1 font-extrabold rounded-md ${tool.isNative ? 'bg-nativeRed/20 text-nativeRed border border-nativeRed/40' : 'bg-extCyan/20 text-extCyan border border-extCyan/40'}`;
+
+            updateSwordCircleState();
+            document.getElementById('toolModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('toolModal').classList.add('hidden');
+            currentSelectedTool = null;
+        }
+
+        function toggleFavorite(id) {
+            if(favorites.includes(id)) {
+                favorites = favorites.filter(fav => fav !== id);
+            } else {
+                favorites.push(id);
+            }
+            localStorage.setItem('sa_favorites', JSON.stringify(favorites));
+            updateFavCount();
+            if(currentSelectedTool && currentSelectedTool.id === id) updateSwordCircleState();
+            if(currentActiveTab === 'favorites') switchTab('favorites');
+            else renderTools(toolsData.filter(t => currentActiveTab === 'all' || t.category === currentActiveTab));
+        }
+
+        function toggleFavoriteCurrent() {
+            if(currentSelectedTool) toggleFavorite(currentSelectedTool.id);
+        }
+
+        function updateFavCount() {
+            document.getElementById('favCount').innerText = favorites.length;
+            const swordIcon = document.getElementById('navSwordIcon');
+            if(favorites.length > 0) {
+                swordIcon.classList.add('text-nativeRed');
+            } else {
+                swordIcon.classList.remove('text-nativeRed');
+            }
+        }
+
+        function updateSwordCircleState() {
+            const btn = document.getElementById('swordToggleBtn');
+            const label = document.getElementById('swordVaultLabel');
+            const heading = document.getElementById('swordVaultHeading');
+            const isFav = favorites.includes(currentSelectedTool.id);
+            
+            if(isFav) {
+                btn.classList.add('active');
+                heading.innerText = "ADDED TO FAVORITE LIST";
+                label.innerText = "Click icon to remove from favorites";
+                label.classList.add('text-nativeRed');
+            } else {
+                btn.classList.remove('active');
+                heading.innerText = "ADD TO FAVORITE LIST";
+                label.innerText = "Click icon to toggle in favorites";
+                label.classList.remove('text-nativeRed');
+            }
+        }
+
+        function launchWorkspaceInApp() {
+            if(!currentSelectedTool) return;
+            const iframeRunner = document.getElementById('iframeRunner');
+            const appIframe = document.getElementById('appIframe');
+            
+            document.getElementById('iframeTitle').innerText = currentSelectedTool.title;
+            document.getElementById('iframeUrl').innerText = currentSelectedTool.iframeUrl;
+            
+            appIframe.src = currentSelectedTool.iframeUrl;
+            iframeRunner.classList.remove('hidden');
+            closeModal();
+        }
+
+        function closeIframeRunner() {
+            const iframeRunner = document.getElementById('iframeRunner');
+            const appIframe = document.getElementById('appIframe');
+            appIframe.src = "about:blank";
+            iframeRunner.classList.add('hidden');
+        }
+
+        function setAiMode(mode) {
+            document.getElementById('aiTextModule').classList.add('hidden');
+            document.getElementById('aiImageModule').classList.add('hidden');
+            document.getElementById('aiAudioModule').classList.add('hidden');
+
+            document.getElementById('modeTextBtn').classList.remove('border-nativeRed', 'bg-nativeRed/10');
+            document.getElementById('modeImageBtn').classList.remove('border-extCyan', 'bg-extCyan/10');
+            document.getElementById('modeAudioBtn').classList.remove('border-amber-400', 'bg-amber-400/10');
+
+            if(mode === 'text') {
+                document.getElementById('aiTextModule').classList.remove('hidden');
+                document.getElementById('modeTextBtn').classList.add('border-nativeRed', 'bg-nativeRed/10');
+            } else if(mode === 'image') {
+                document.getElementById('aiImageModule').classList.remove('hidden');
+                document.getElementById('modeImageBtn').classList.add('border-extCyan', 'bg-extCyan/10');
+            } else if(mode === 'audio') {
+                document.getElementById('aiAudioModule').classList.remove('hidden');
+                document.getElementById('modeAudioBtn').classList.add('border-amber-400', 'bg-amber-400/10');
+            }
+        }
+
+        function formatMarkdown(text) {
+            if (!text) return '';
+            let formatted = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
+            formatted = formatted.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            formatted = formatted.replace(/\n/g, '<br>');
+
+            return formatted;
+        }
+
+        async function runAiTextGeneration() {
+            const prompt = document.getElementById('aiPromptInput').value.trim();
+            if(!prompt) return;
+
+            const btn = document.getElementById('generateTextBtn');
+            const resultBox = document.getElementById('aiTextResult');
+            const container = document.getElementById('aiTextResultContainer');
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> GENERATING...`;
+            container.classList.remove('hidden');
+            resultBox.innerHTML = `<em>Processing request with Gemini 3 Flash...</em>`;
+
+            try {
+                const apiKey = "AQ.Ab8RN6IcDIISZnRXEbI1lUgIZlzNCYRQFFlxTmn0P2aPvZLyHg";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        systemInstruction: {
+                            parts: [{ text: "You are SA SHADOW HUB Dev Assistant. Provide concise, high quality code snippets or answers." }]
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
+                lastGeneratedText = textOutput;
+                resultBox.innerHTML = formatMarkdown(textOutput);
+            } catch(e) {
+                resultBox.innerHTML = `<span class="text-rose-500">Error executing Gemini API: ${e.message}</span>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-bolt"></i> RUN GEMINI ASSISTANT`;
+            }
+        }
+
+        function readAloudOutput() {
+            if(!lastGeneratedText) return;
+            window.speechSynthesis.cancel();
+            const cleanText = lastGeneratedText.replace(/[*`#_]/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        async function runAiImageGeneration() {
+            const prompt = document.getElementById('aiImagePromptInput').value.trim();
+            if(!prompt) return;
+
+            const btn = document.getElementById('generateImgBtn');
+            const resultImg = document.getElementById('aiImageResult');
+            const container = document.getElementById('aiImageResultContainer');
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> RENDERING...`;
+            container.classList.remove('hidden');
+
+            try {
+                const apiKey = "AQ.Ab8RN6IcDIISZnRXEbI1lUgIZlzNCYRQFFlxTmn0P2aPvZLyHg";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { responseModalities: ['IMAGE'] }
+                    })
+                });
+
+                const data = await response.json();
+                const base64Data = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                if(base64Data) {
+                    resultImg.src = `data:image/png;base64,${base64Data}`;
+                } else {
+                    alert("Image generation failed. Try a different prompt.");
+                }
+            } catch(e) {
+                alert(`Error rendering image: ${e.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-image"></i> GENERATE ASSET`;
+            }
+        }
+
+        async function runAiAudioGeneration() {
+            const prompt = document.getElementById('aiAudioPromptInput').value.trim();
+            if(!prompt) return;
+
+            const btn = document.getElementById('generateAudioBtn');
+            const resultAudio = document.getElementById('aiAudioResult');
+            const container = document.getElementById('aiAudioResultContainer');
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> SYNTHESIZING...`;
+            container.classList.remove('hidden');
+
+            try {
+                const apiKey = "AQ.Ab8RN6IcDIISZnRXEbI1lUgIZlzNCYRQFFlxTmn0P2aPvZLyHg";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Zephyr" } } }
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                const part = data?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType) {
+                    const sampleRate = parseInt(mimeType.match(/rate=(\d+)/)?.[1] || "24000", 10);
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    resultAudio.src = URL.createObjectURL(wavBlob);
+                    resultAudio.play();
+                }
+            } catch(e) {
+                alert(`Error generating audio: ${e.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-volume-high"></i> GENERATE SPEECH`;
+            }
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const bytesPerSample = 2;
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcm16.length * bytesPerSample;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(44 + i * 2, pcm16[i], true);
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+    </script>
+</body>
+</html>
