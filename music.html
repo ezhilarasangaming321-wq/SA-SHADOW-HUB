@@ -18,7 +18,10 @@
             --metallic-border: 1px solid rgba(255, 30, 56, 0.2);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
-        html, body { background-color: var(--bg-black); color: var(--white); width: 100vw; height: 100%; overflow-x: hidden; position: relative; }
+        
+        /* Hide Scrollbars globally for clean app view */
+        ::-webkit-scrollbar { display: none; }
+        html, body { background-color: var(--bg-black); color: var(--white); width: 100vw; height: 100%; overflow-x: hidden; scrollbar-width: none; position: relative; }
         body { display: flex; flex-direction: column; }
         
         .app-container { display: flex; flex: 1; width: 100%; min-height: calc(100vh - 70px); padding-bottom: 140px; overflow-x: hidden; }
@@ -47,15 +50,13 @@
         .source-pill { background: rgba(255,255,255,0.05); border: var(--metallic-border); padding: 5px 12px; border-radius: 15px; font-size: 0.75rem; cursor: pointer; color: var(--text-gray); transition: 0.2s; }
         .source-pill.active { background: var(--neon-red); color: var(--white); border-color: var(--neon-red); font-weight: 600; }
 
-        .search-filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; width: 100%; }
-        .search-filters::-webkit-scrollbar { display: none; }
+        .search-filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; width: 100%; }
         .filter-pill { background: var(--card-black); border: var(--metallic-border); padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; color: var(--text-gray); transition: 0.2s; white-space: nowrap; }
         .filter-pill:hover, .filter-pill.active { background: var(--neon-red); color: var(--white); border-color: var(--neon-red); }
 
         /* Sections & Carousels */
         .section-title { font-size: 1.1rem; font-weight: 700; margin: 20px 0 12px 0; color: var(--white); display: flex; justify-content: space-between; align-items: center; }
-        .carousel-container { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; width: 100%; }
-        .carousel-container::-webkit-scrollbar { display: none; }
+        .carousel-container { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; width: 100%; }
         
         .promo-card { min-width: 200px; height: 110px; border-radius: 12px; background-size: cover; background-position: center; position: relative; cursor: pointer; border: var(--metallic-border); overflow: hidden; transition: 0.3s; flex-shrink: 0; }
         .promo-card .overlay { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 10px; font-weight: bold; font-size: 0.85rem; }
@@ -182,7 +183,6 @@
 <body>
 
     <div class="app-container">
-        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-icon active" onclick="switchTab('home', this)" title="Home"><i class="fa-solid fa-house"></i></div>
             <div class="sidebar-icon" onclick="switchTab('search', this)" title="Search"><i class="fa-solid fa-magnifying-glass"></i></div>
@@ -191,7 +191,6 @@
             <div class="sidebar-icon" onclick="switchTab('settings', this)" title="Settings"><i class="fa-solid fa-gear"></i></div>
         </aside>
 
-        <!-- Main Content Area -->
         <main class="main-content">
             <header class="top-bar">
                 <div class="logo">
@@ -204,7 +203,6 @@
                 </div>
             </header>
 
-            <!-- Home View -->
             <div id="home-view" class="view-section">
                 <div class="carousel-container">
                     <div class="promo-card" onclick="loadCategory('Top Tamil')" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500');">
@@ -219,7 +217,6 @@
                 <div class="song-grid" id="songGrid"></div>
             </div>
 
-            <!-- Search Results View -->
             <div id="search-view" class="view-section" style="display:none;">
                 <div class="search-filters-container">
                     <div class="search-source-row">
@@ -238,7 +235,6 @@
                 <div class="song-grid" id="searchGrid"></div>
             </div>
 
-            <!-- Discover View -->
             <div id="discover-view" class="view-section" style="display:none;">
                 <div class="section-title">Browse Categories & Genres</div>
                 <div class="carousel-container" style="flex-wrap: wrap;">
@@ -248,7 +244,6 @@
                 </div>
             </div>
 
-            <!-- Playlists / Library View -->
             <div id="playlists-view" class="view-section" style="display:none;">
                 <div class="section-title">
                     <span>Your Library & Playlists</span>
@@ -257,7 +252,6 @@
                 <div class="song-grid" id="playlistsGrid"></div>
             </div>
 
-            <!-- Settings View -->
             <div id="settings-view" class="view-section" style="display:none;">
                 <div class="section-title">Player Settings</div>
                 <div style="background:var(--card-black); padding:15px; border-radius:10px; border:var(--metallic-border); max-width:500px;">
@@ -268,7 +262,6 @@
         </main>
     </div>
 
-    <!-- Bottom Mini Player -->
     <div class="mini-player" id="miniPlayer">
         <div class="mini-left" onclick="openFullPlayer()">
             <img id="miniImg" src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300" alt="Art">
@@ -287,7 +280,6 @@
         </div>
     </div>
 
-    <!-- Playlist Detail Modal -->
     <div class="playlist-modal" id="playlistModal">
         <button class="close-playlist-modal" onclick="closePlaylistModal()"><i class="fa-solid fa-chevron-down"></i></button>
         <div class="playlist-container-inner">
@@ -310,7 +302,6 @@
         </div>
     </div>
 
-    <!-- Full Screen Popup Player Modal -->
     <div class="full-player-modal" id="fullPlayerModal">
         <button class="close-modal" onclick="closeFullPlayer()"><i class="fa-solid fa-chevron-down"></i></button>
         <div class="full-player-content">
@@ -356,7 +347,6 @@
         </div>
     </div>
 
-    <!-- Mobile Queue Slide-up Drawer -->
     <div class="mobile-queue-drawer" id="mobileQueueDrawer">
         <div class="drawer-header">
             <h3 style="font-size: 0.95rem;"><i class="fa-solid fa-list-ul" style="color: var(--neon-red);"></i> Next Up Queue</h3>
@@ -367,14 +357,12 @@
         </div>
     </div>
 
-    <!-- Context Menu -->
     <div class="context-menu" id="songContextMenu">
         <div class="context-menu-item" onclick="contextPlayNext()"><i class="fa-solid fa-play"></i> Play Next</div>
         <div class="context-menu-item" onclick="contextToggleLike()"><i class="fa-solid fa-heart"></i> Like / Unlike</div>
         <div class="context-menu-item" onclick="contextAddToPlaylist()"><i class="fa-solid fa-plus"></i> Add to Playlist</div>
     </div>
 
-    <!-- Modals -->
     <div class="modal-overlay" id="createPlaylistModal">
         <div class="modal-card">
             <h3>Create New Playlist</h3>
@@ -431,7 +419,6 @@
             return txt.value;
         }
 
-        /* MEDIA SESSION API INTEGRATION (Mobile & OS Background Controls) */
         function updateMediaSession() {
             if ('mediaSession' in navigator && songs.length > 0) {
                 const song = songs[currentIndex];
@@ -449,7 +436,6 @@
                     ]
                 });
 
-                /* Setup Media Session Action Handlers */
                 navigator.mediaSession.setActionHandler('play', () => playSong());
                 navigator.mediaSession.setActionHandler('pause', () => pauseSong());
                 navigator.mediaSession.setActionHandler('previoustrack', () => prevSong());
@@ -464,7 +450,6 @@
             }
         }
 
-        /* YouTube Stream Audio URL Resolver */
         async function resolveYouTubeAudioUrl(videoId) {
             const servers = [
                 `https://pipedapi.kavin.rocks/streams/${videoId}`,
@@ -765,8 +750,6 @@
             updateLikeButtonState();
             renderQueue();
             if(activePlaylist) renderPlaylistTracklist();
-            
-            /* Update Mobile OS Notification Info */
             updateMediaSession();
         }
 
@@ -878,7 +861,6 @@
                 document.getElementById('currentTime').innerText = formatTime(current);
                 document.getElementById('durationTime').innerText = formatTime(duration);
 
-                /* Synchronize Mobile Notification Bar Slider Position */
                 if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
                     navigator.mediaSession.setPositionState({
                         duration: duration,
