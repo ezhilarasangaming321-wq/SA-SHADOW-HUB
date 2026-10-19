@@ -1,7 +1,7 @@
 {
   "name": "Void Echo Pro",
   "short_name": "Void Echo",
-  "start_url": "/",
+  "start_url": "./music.html",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#ff1e38",
