@@ -1,0 +1,16 @@
+{
+  "name": "Void Echo Pro",
+  "short_name": "Void Echo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#ff1e38",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=512",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
