@@ -1,15 +1,16 @@
 {
   "name": "Void Echo Pro",
   "short_name": "Void Echo",
-  "start_url": "./music.html",
+  "start_url": "/SA-SHADOW-HUB/music.html",
+  "scope": "/SA-SHADOW-HUB/",
   "display": "standalone",
   "background_color": "#0a0a0a",
   "theme_color": "#ff1e38",
   "icons": [
     {
-      "src": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=512",
+      "src": "favicon.png",
       "sizes": "512x512",
-      "type": "image/jpeg",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
