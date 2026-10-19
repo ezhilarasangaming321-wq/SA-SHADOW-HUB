@@ -2,7 +2,7 @@
 <html lang="ta">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Void Echo - Pro Music Suite</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -17,18 +17,19 @@
             --border-color: rgba(255, 255, 255, 0.05);
             --metallic-border: 1px solid rgba(255, 30, 56, 0.2);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-black); color: var(--white); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        html, body { background-color: var(--bg-black); color: var(--white); width: 100%; height: 100%; overflow-x: hidden; }
+        body { display: flex; flex-direction: column; }
         
-        .app-container { display: flex; flex: 1; height: calc(100vh - 70px); overflow: hidden; width: 100%; }
+        .app-container { display: flex; flex: 1; width: 100%; min-height: calc(100vh - 70px); padding-bottom: 130px; }
         
-        /* Sidebar */
-        .sidebar { width: 80px; background: var(--panel-black); border-right: var(--metallic-border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 25px; z-index: 102; }
+        /* Sidebar (Desktop) */
+        .sidebar { width: 80px; background: var(--panel-black); border-right: var(--metallic-border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 25px; z-index: 102; position: fixed; top: 0; left: 0; height: calc(100vh - 70px); }
         .sidebar-icon { color: var(--text-gray); font-size: 1.3rem; cursor: pointer; transition: 0.2s; padding: 10px; border-radius: 10px; }
         .sidebar-icon:hover, .sidebar-icon.active { color: var(--neon-red); background: rgba(255,30,56,0.1); }
 
         /* Main Content Area */
-        .main-content { flex: 1; padding: 25px; overflow-y: auto; padding-bottom: 90px; }
+        .main-content { flex: 1; margin-left: 80px; padding: 25px; overflow-y: auto; width: calc(100% - 80px); }
         
         /* Top Bar */
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
@@ -42,7 +43,8 @@
         .search-box input { background: transparent; border: none; color: var(--white); outline: none; width: 100%; font-size: 0.9rem; }
 
         /* Search Filter Pills */
-        .search-filters { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .search-filters { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .search-filters::-webkit-scrollbar { display: none; }
         .filter-pill { background: var(--card-black); border: var(--metallic-border); padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; color: var(--text-gray); transition: 0.2s; white-space: nowrap; }
         .filter-pill:hover, .filter-pill.active { background: var(--neon-red); color: var(--white); border-color: var(--neon-red); }
 
@@ -56,62 +58,67 @@
         .promo-card:hover { transform: scale(1.03); border-color: var(--neon-red); }
         .promo-card .overlay { position: absolute; bottom: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 15px; font-weight: bold; font-size: 1rem; }
 
-        .song-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-        .song-card { background: var(--card-black); border: var(--metallic-border); border-radius: 12px; padding: 12px; cursor: pointer; transition: 0.3s; text-align: center; position: relative; }
-        .song-card:hover { transform: translateY(-5px); border-color: var(--neon-red); box-shadow: 0 10px 20px rgba(255,30,56,0.15); }
-        .song-card img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
-        .song-card h4 { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .song-card p { font-size: 0.75rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* Optimized Grid for Mobile (2 items per row) and Desktop */
+        .song-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        @media (min-width: 768px) {
+            .song-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        }
+
+        .song-card { background: var(--card-black); border: var(--metallic-border); border-radius: 12px; padding: 10px; cursor: pointer; transition: 0.3s; text-align: center; position: relative; }
+        .song-card:hover { transform: translateY(-3px); border-color: var(--neon-red); box-shadow: 0 8px 16px rgba(255,30,56,0.15); }
+        .song-card img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+        .song-card h4 { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-card p { font-size: 0.7rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .song-card-menu { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+        .song-card-menu { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 0.75rem; cursor: pointer; transition: 0.2s; }
         .song-card-menu:hover { background: var(--neon-red); }
 
-        /* Bloomee UI Playlist Detail Modal / Popup */
-        .playlist-modal { position: fixed; inset: 0; background: radial-gradient(circle at top right, #1a1c2e 0%, var(--bg-black) 70%); z-index: 1500; display: none; flex-direction: column; padding: 40px; overflow-y: auto; }
+        /* Playlist Detail Modal */
+        .playlist-modal { position: fixed; inset: 0; background: radial-gradient(circle at top right, #1a1c2e 0%, var(--bg-black) 70%); z-index: 1500; display: none; flex-direction: column; padding: 25px; overflow-y: auto; }
         .playlist-modal.active { display: flex; }
         .close-playlist-modal { background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; align-self: flex-start; margin-bottom: 20px; }
 
-        .playlist-hero { display: flex; gap: 40px; margin-bottom: 30px; align-items: center; max-width: 1100px; margin: 0 auto; width: 100%; flex-wrap: wrap; justify-content: center; }
+        .playlist-hero { display: flex; gap: 30px; margin-bottom: 30px; align-items: center; max-width: 1100px; margin: 0 auto; width: 100%; flex-wrap: wrap; justify-content: center; }
         .hero-left { text-align: center; width: 280px; }
-        .hero-cover { width: 260px; height: 260px; border-radius: 20px; object-fit: cover; box-shadow: 0 20px 40px rgba(0,0,0,0.6); margin-bottom: 15px; }
-        .hero-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 5px; }
-        .hero-subtitle { color: var(--text-gray); font-size: 0.85rem; margin-bottom: 15px; }
+        .hero-cover { width: 220px; height: 220px; border-radius: 20px; object-fit: cover; box-shadow: 0 20px 40px rgba(0,0,0,0.6); margin-bottom: 15px; }
+        .hero-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; }
+        .hero-subtitle { color: var(--text-gray); font-size: 0.8rem; margin-bottom: 15px; }
         
         .hero-buttons { display: flex; align-items: center; justify-content: center; gap: 12px; }
-        .hero-btn { width: 42px; height: 42px; border-radius: 50%; background: var(--card-black); border: 1px solid var(--border-color); color: var(--text-gray); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .hero-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--card-black); border: 1px solid var(--border-color); color: var(--text-gray); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .hero-btn:hover { color: var(--white); background: rgba(255,255,255,0.1); }
-        .hero-btn.play-main { width: 52px; height: 52px; background: var(--neon-pink); color: var(--white); font-size: 1.2rem; box-shadow: 0 0 20px rgba(255, 42, 95, 0.5); }
+        .hero-btn.play-main { width: 48px; height: 48px; background: var(--neon-pink); color: var(--white); font-size: 1.1rem; box-shadow: 0 0 20px rgba(255, 42, 95, 0.5); }
 
-        .hero-right { flex: 1; background: rgba(20, 22, 34, 0.6); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); max-height: 450px; overflow-y: auto; min-width: 280px; }
+        .hero-right { flex: 1; background: rgba(20, 22, 34, 0.6); border-radius: 20px; padding: 15px; border: 1px solid var(--border-color); max-height: 400px; overflow-y: auto; min-width: 280px; }
         .track-list { list-style: none; }
-        .track-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-radius: 12px; transition: 0.2s; cursor: pointer; margin-bottom: 6px; }
+        .track-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 10px; transition: 0.2s; cursor: pointer; margin-bottom: 5px; }
         .track-item:hover, .track-item.playing-now { background: rgba(255, 42, 95, 0.1); }
-        .track-left { display: flex; align-items: center; gap: 15px; }
-        .track-num { color: var(--text-gray); font-size: 0.85rem; width: 20px; text-align: center; }
-        .track-img { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; }
-        .track-info h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; }
-        .track-info p { font-size: 0.75rem; color: var(--text-gray); }
+        .track-left { display: flex; align-items: center; gap: 12px; }
+        .track-num { color: var(--text-gray); font-size: 0.8rem; width: 20px; text-align: center; }
+        .track-img { width: 38px; height: 38px; border-radius: 6px; object-fit: cover; }
+        .track-info h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 2px; }
+        .track-info p { font-size: 0.7rem; color: var(--text-gray); }
 
         /* Persistent Bottom Mini Player */
-        .mini-player { height: 70px; background: rgba(15, 15, 15, 0.98); backdrop-filter: blur(10px); border-top: var(--metallic-border); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; z-index: 100; position: relative; }
-        .mini-left { display: flex; align-items: center; gap: 15px; cursor: pointer; }
-        .mini-left img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
-        .mini-info h4 { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
-        .mini-info p { font-size: 0.8rem; color: var(--text-gray); }
+        .mini-player { height: 70px; background: rgba(15, 15, 15, 0.98); backdrop-filter: blur(10px); border-top: var(--metallic-border); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 100; position: fixed; bottom: 0; left: 0; width: 100%; }
+        .mini-left { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; min-width: 0; }
+        .mini-left img { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+        .mini-info { min-width: 0; flex: 1; }
+        .mini-info h4 { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-info p { font-size: 0.75rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .progress-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: #222; cursor: pointer; }
         .progress-bar { height: 100%; background: var(--neon-red); width: 0%; transition: width 0.1s linear; }
 
-        /* Full Screen Glassmorphic Player Modal */
-        .full-player-modal { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1f080b 0%, var(--bg-black) 100%); z-index: 2000; transition: top 0.4s ease-in-out; display: flex; flex-direction: column; padding: 30px; overflow-y: auto; }
+        /* Full Screen Player Modal (PC: Side-by-Side | Mobile: Clean Player with Queue Drawer) */
+        .full-player-modal { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #1f080b 0%, var(--bg-black) 100%); z-index: 2000; transition: top 0.35s ease-in-out; display: flex; flex-direction: column; padding: 25px; overflow-y: auto; }
         .full-player-modal.active { top: 0; }
-        .close-modal { background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; align-self: flex-start; }
+        .close-modal { background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; align-self: flex-start; margin-bottom: 10px; }
         
-        /* PC LAYOUT: Player on Left, Queue on Right */
-        .full-player-content { display: flex; flex-direction: row; flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; gap: 50px; align-items: center; justify-content: center; }
+        .full-player-content { display: flex; flex-direction: row; flex: 1; max-width: 1100px; margin: 0 auto; width: 100%; gap: 40px; align-items: center; justify-content: center; }
         .player-main-col { flex: 1.2; display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; }
         
-        .vinyl-container { width: 230px; height: 230px; border-radius: 50%; background: #000; border: 6px solid #222; box-shadow: 0 15px 30px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+        .vinyl-container { width: 220px; height: 220px; border-radius: 50%; background: #000; border: 6px solid #222; box-shadow: 0 15px 30px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
         .vinyl-disc { width: 100%; height: 100%; border-radius: 50%; position: relative; overflow: hidden; animation: rotateVinyl 8s linear infinite; animation-play-state: paused; }
         .vinyl-disc.playing { animation-play-state: running; }
         .vinyl-disc img { width: 100%; height: 100%; object-fit: cover; }
@@ -127,12 +134,22 @@
         .seek-bar { height: 100%; background: var(--neon-red); border-radius: 3px; width: 0%; }
         .time-info { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-gray); }
 
-        .player-queue-col { flex: 0.9; background: rgba(20, 20, 20, 0.7); border: var(--metallic-border); border-radius: 15px; padding: 20px; height: 480px; overflow-y: auto; width: 100%; }
+        .player-queue-col { flex: 0.9; background: rgba(20, 20, 20, 0.7); border: var(--metallic-border); border-radius: 15px; padding: 20px; height: 450px; overflow-y: auto; width: 100%; }
         .player-queue-col h3 { font-size: 1rem; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 8px; }
         #queueList { list-style: none; }
-        #queueList li { padding: 10px; border-radius: 8px; cursor: grab; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: 0.2s; margin-bottom: 5px; background: rgba(255,255,255,0.03); }
+        #queueList li { padding: 9px; border-radius: 8px; cursor: grab; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: 0.2s; margin-bottom: 6px; background: rgba(255,255,255,0.03); }
         #queueList li:active { cursor: grabbing; }
         #queueList li:hover, #queueList li.playing-queue { background: rgba(255, 30, 56, 0.15); border: 1px solid var(--neon-red); color: var(--white); }
+
+        /* Mobile Queue Drawer Button & Slide-up Panel */
+        .mobile-queue-btn { display: none; background: rgba(255, 30, 56, 0.15); border: 1px solid var(--neon-red); color: var(--white); padding: 10px 20px; border-radius: 25px; font-size: 0.85rem; font-weight: 600; cursor: pointer; margin-top: 15px; align-items: center; gap: 8px; transition: 0.2s; }
+        .mobile-queue-btn:hover { background: var(--neon-red); }
+
+        .mobile-queue-drawer { position: fixed; bottom: -100%; left: 0; width: 100%; height: 75vh; background: #141419; border-top: 2px solid var(--neon-red); border-radius: 25px 25px 0 0; z-index: 2500; transition: bottom 0.35s ease-in-out; display: flex; flex-direction: column; padding: 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.8); }
+        .mobile-queue-drawer.active { bottom: 0; }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .drawer-close { background: none; border: none; color: var(--white); font-size: 1.2rem; cursor: pointer; }
+        .drawer-body { flex: 1; overflow-y: auto; }
 
         /* Modals & Context Menus */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 20px; }
@@ -146,23 +163,23 @@
 
         /* MOBILE RESPONSIVE MEDIA QUERIES */
         @media (max-width: 768px) {
-            body { height: 100vh; overflow-y: auto; }
-            .app-container { flex-direction: column; height: auto; flex: 1; padding-bottom: 70px; }
-            .sidebar { width: 100%; height: 60px; flex-direction: row; justify-content: space-around; border-right: none; border-top: var(--metallic-border); position: fixed; bottom: 0; left: 0; background: rgba(20, 20, 20, 0.98); backdrop-filter: blur(10px); padding: 0; z-index: 105; }
-            .sidebar-icon { font-size: 1.1rem; padding: 10px 15px; border-radius: 8px; }
-            .main-content { padding: 15px; margin-bottom: 60px; overflow-y: visible; }
-            .mini-player { position: fixed; bottom: 60px; left: 0; width: 100%; z-index: 104; border-top: var(--metallic-border); }
+            .sidebar { width: 100%; height: 60px; flex-direction: row; justify-content: space-around; border-right: none; border-top: var(--metallic-border); top: auto; bottom: 0; padding: 0; }
+            .main-content { margin-left: 0; width: 100%; padding: 15px; padding-bottom: 30px; }
+            .mini-player { bottom: 60px; }
+            .app-container { padding-bottom: 140px; }
             
-            /* On Mobile, stack Player on top, Queue below */
-            .full-player-content { flex-direction: column; gap: 20px; }
-            .player-queue-col { max-height: 250px; }
+            /* On Mobile, hide desktop queue column inside modal and show Queue Button */
+            .full-player-content { flex-direction: column; justify-content: flex-start; gap: 10px; padding-top: 10px; }
+            .player-queue-col { display: none; }
+            .mobile-queue-btn { display: flex; }
+            .vinyl-container { width: 180px; height: 180px; margin-bottom: 10px; }
         }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <!-- Sidebar / Bottom Navigation in Mobile -->
+        <!-- Sidebar / Bottom Navigation -->
         <aside class="sidebar">
             <div class="sidebar-icon active" onclick="switchTab('home', this)" title="Home"><i class="fa-solid fa-house"></i></div>
             <div class="sidebar-icon" onclick="switchTab('search', this)" title="Search"><i class="fa-solid fa-magnifying-glass"></i></div>
@@ -243,14 +260,6 @@
                     <label style="display:block; margin-bottom:10px; font-weight:600;">Master Volume</label>
                     <input type="range" min="0" max="1" step="0.01" value="1" oninput="changeVolume(this.value)" style="width:100%; accent-color:var(--neon-red);">
                 </div>
-                <div style="background:var(--card-black); padding:20px; border-radius:12px; border:var(--metallic-border); max-width:500px;">
-                    <label style="display:block; margin-bottom:10px; font-weight:600;">Keyboard Shortcuts / App Info</label>
-                    <p style="font-size:0.85rem; color:var(--text-gray); line-height: 1.8;">
-                        <b style="color:var(--neon-red);">Space</b> : Play / Pause<br>
-                        <b style="color:var(--neon-red);">Right / Left Arrow</b> : Seek Forward / Backward 5s<br>
-                        <b style="color:var(--neon-red);">PWA Installed</b> : You can install this app on your phone/desktop.
-                    </p>
-                </div>
             </div>
         </main>
     </div>
@@ -274,7 +283,7 @@
         </div>
     </div>
 
-    <!-- Bloomee UI Playlist Detail Modal / Popup -->
+    <!-- Playlist Detail Modal -->
     <div class="playlist-modal" id="playlistModal">
         <button class="close-playlist-modal" onclick="closePlaylistModal()"><i class="fa-solid fa-chevron-down"></i></button>
         <div class="playlist-hero">
@@ -297,20 +306,19 @@
         </div>
     </div>
 
-    <!-- Full Screen Popup Player Modal (Left: Player, Right: Queue) -->
+    <!-- Full Screen Popup Player Modal (Clean Player + Mobile Queue Drawer) -->
     <div class="full-player-modal" id="fullPlayerModal">
         <button class="close-modal" onclick="closeFullPlayer()"><i class="fa-solid fa-chevron-down"></i></button>
         <div class="full-player-content">
-            <!-- Left Side: Player Controls & Disc -->
             <div class="player-main-col">
                 <div class="vinyl-container">
                     <div class="vinyl-disc" id="vinylDisc">
                         <img id="fullImg" src="" alt="Album Art">
                     </div>
                 </div>
-                <div style="margin-bottom: 15px;">
-                    <h2 id="fullTitle">Song Title</h2>
-                    <p id="fullArtist" style="color:var(--text-gray); font-size:0.9rem;">Artist Name</p>
+                <div style="margin-bottom: 12px;">
+                    <h2 id="fullTitle" style="font-size: 1.1rem;">Song Title</h2>
+                    <p id="fullArtist" style="color:var(--text-gray); font-size:0.8rem;">Artist Name</p>
                 </div>
 
                 <div class="full-progress-container">
@@ -331,9 +339,14 @@
                     <button id="loopBtn" onclick="toggleLoop()"><i class="fa-solid fa-repeat"></i></button>
                     <button id="likeBtn" onclick="toggleLike()"><i class="fa-regular fa-heart"></i></button>
                 </div>
+
+                <!-- Mobile Queue Button with Up Arrow -->
+                <button class="mobile-queue-btn" onclick="toggleMobileQueueDrawer()">
+                    <i class="fa-solid fa-list-ul"></i> Queue <i class="fa-solid fa-chevron-up" style="font-size: 0.75rem;"></i>
+                </button>
             </div>
             
-            <!-- Right Side: Next Up Queue List -->
+            <!-- Desktop Queue Column (Side-by-Side) -->
             <div class="player-queue-col">
                 <h3><span><i class="fa-solid fa-list-ul"></i> Next Up Queue</span></h3>
                 <ul id="queueList"></ul>
@@ -341,7 +354,18 @@
         </div>
     </div>
 
-    <!-- Context Menu for Three-Dot Options -->
+    <!-- Mobile Queue Slide-up Drawer -->
+    <div class="mobile-queue-drawer" id="mobileQueueDrawer">
+        <div class="drawer-header">
+            <h3 style="font-size: 1rem;"><i class="fa-solid fa-list-ul" style="color: var(--neon-red);"></i> Next Up Queue</h3>
+            <button class="drawer-close" onclick="toggleMobileQueueDrawer()"><i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+        <div class="drawer-body">
+            <ul id="mobileQueueList" style="list-style: none;"></ul>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
     <div class="context-menu" id="songContextMenu">
         <div class="context-menu-item" onclick="contextPlayNext()"><i class="fa-solid fa-play"></i> Play Next</div>
         <div class="context-menu-item" onclick="contextToggleLike()"><i class="fa-solid fa-heart"></i> Like / Unlike</div>
@@ -952,36 +976,49 @@
         let draggedIndex = null;
         function renderQueue() {
             const queueList = document.getElementById('queueList');
+            const mobileQueueList = document.getElementById('mobileQueueList');
             if(!queueList) return;
+            
             queueList.innerHTML = '';
+            if(mobileQueueList) mobileQueueList.innerHTML = '';
+
             songs.forEach((song, idx) => {
-                const li = document.createElement('li');
-                li.draggable = true;
-                if (idx === currentIndex) li.className = 'playing-queue';
-                li.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:10px; flex:1; cursor:pointer;" onclick="currentIndex = ${idx}; loadSong(currentIndex); playSong();">
-                        <img src="${song.img}" style="width:35px;height:35px;border-radius:6px;object-fit:cover;">
-                        <div>
-                            <div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;">${song.title}</div>
-                            <div style="font-size:0.75rem; color:var(--text-gray);">${song.artist}</div>
+                const createQueueItem = () => {
+                    const li = document.createElement('li');
+                    li.draggable = true;
+                    if (idx === currentIndex) li.className = 'playing-queue';
+                    li.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px; flex:1; cursor:pointer;" onclick="currentIndex = ${idx}; loadSong(currentIndex); playSong(); toggleMobileQueueDrawer();">
+                            <img src="${song.img}" style="width:35px;height:35px;border-radius:6px;object-fit:cover;">
+                            <div>
+                                <div style="font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;">${song.title}</div>
+                                <div style="font-size:0.75rem; color:var(--text-gray);">${song.artist}</div>
+                            </div>
                         </div>
-                    </div>
-                    <i class="fa-solid fa-ellipsis-vertical" style="color:var(--text-gray); cursor:pointer; padding:5px;" onclick="openContextMenu(event, ${JSON.stringify(song).replace(/"/g, '&quot;')})"></i>
-                `;
+                        <i class="fa-solid fa-ellipsis-vertical" style="color:var(--text-gray); cursor:pointer; padding:5px;" onclick="openContextMenu(event, ${JSON.stringify(song).replace(/"/g, '&quot;')})"></i>
+                    `;
 
-                li.addEventListener('dragstart', () => { draggedIndex = idx; });
-                li.addEventListener('dragover', (e) => { e.preventDefault(); });
-                li.addEventListener('drop', () => {
-                    const droppedIndex = idx;
-                    const movedSong = songs.splice(draggedIndex, 1)[0];
-                    songs.splice(droppedIndex, 0, movedSong);
-                    if(currentIndex === draggedIndex) currentIndex = droppedIndex;
-                    renderQueue();
-                    if(activePlaylist) renderPlaylistTracklist();
-                });
+                    li.addEventListener('dragstart', () => { draggedIndex = idx; });
+                    li.addEventListener('dragover', (e) => { e.preventDefault(); });
+                    li.addEventListener('drop', () => {
+                        const droppedIndex = idx;
+                        const movedSong = songs.splice(draggedIndex, 1)[0];
+                        songs.splice(droppedIndex, 0, movedSong);
+                        if(currentIndex === draggedIndex) currentIndex = droppedIndex;
+                        renderQueue();
+                        if(activePlaylist) renderPlaylistTracklist();
+                    });
+                    return li;
+                };
 
-                queueList.appendChild(li);
+                queueList.appendChild(createQueueItem());
+                if(mobileQueueList) mobileQueueList.appendChild(createQueueItem());
             });
+        }
+
+        function toggleMobileQueueDrawer() {
+            const drawer = document.getElementById('mobileQueueDrawer');
+            drawer.classList.toggle('active');
         }
 
         function renderPlaylistsLibrary() {
@@ -1103,7 +1140,10 @@
         }
 
         function openFullPlayer() { document.getElementById('fullPlayerModal').classList.add('active'); }
-        function closeFullPlayer() { document.getElementById('fullPlayerModal').classList.remove('active'); }
+        function closeFullPlayer() { 
+            document.getElementById('fullPlayerModal').classList.remove('active');
+            document.getElementById('mobileQueueDrawer').classList.remove('active');
+        }
 
         function switchTab(tab, el) {
             if(el) {
@@ -1148,47 +1188,6 @@
                 }
             });
         }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
-                return;
-            }
-
-            switch (e.code) {
-                case 'Space':
-                    e.preventDefault();
-                    togglePlay();
-                    break;
-                case 'ArrowRight':
-                    e.preventDefault();
-                    if (audio.duration) audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
-                    break;
-                case 'ArrowLeft':
-                    e.preventDefault();
-                    if (audio.duration) audio.currentTime = Math.max(0, audio.currentTime - 5);
-                    break;
-                case 'ArrowUp':
-                    e.preventDefault();
-                    changeVolume(Math.min(1, audio.volume + 0.1));
-                    break;
-                case 'ArrowDown':
-                    e.preventDefault();
-                    changeVolume(Math.max(0, audio.volume - 0.1));
-                    break;
-                case 'KeyN':
-                    nextSong();
-                    break;
-                case 'KeyP':
-                    prevSong();
-                    break;
-                case 'KeyM':
-                    audio.muted = !audio.muted;
-                    break;
-                case 'KeyL':
-                    toggleLike();
-                    break;
-            }
-        });
 
         fetchHomeTrending("tamil top trending hits");
     </script>
