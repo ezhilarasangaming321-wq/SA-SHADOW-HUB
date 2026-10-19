@@ -671,6 +671,14 @@
 
         function launchWorkspaceInApp() {
             if(!currentSelectedTool) return;
+
+            // மியூசிக் என்ஜின் என்றால் மட்டும் புதிய டேப்பில் திறக்கச் செய்தல்
+            if(currentSelectedTool.category === 'music' || currentSelectedTool.id === 'sa-music') {
+                window.open(currentSelectedTool.iframeUrl, '_blank');
+                closeModal();
+                return;
+            }
+
             const iframeRunner = document.getElementById('iframeRunner');
             const appIframe = document.getElementById('appIframe');
 
