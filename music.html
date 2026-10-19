@@ -10,7 +10,7 @@
     <link rel="apple-touch-icon" href="favicon.png">
 
     <!-- PWA Manifest Link -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/SA-SHADOW-HUB/manifest.json">
     <meta name="theme-color" content="#ff1e38">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -264,7 +264,7 @@
                 <div class="section-title">Player Settings</div>
                 <div style="background:var(--card-black); padding:15px; border-radius:10px; border:var(--metallic-border); max-width:500px;">
                     <label style="display:block; margin-bottom:8px; font-weight:600; font-size:0.85rem;">Master Volume</label>
-                    <input type="range" min="0" max="1" step="0.01" value="1" oninput="changeVolume(this.value)" style="width:100%; accent-color:var(--neon-red);">
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" oninput="changeVolume(this.value)" style="width:100%; accent-color:var(--neon-red);">
                 </div>
             </div>
         </main>
@@ -405,7 +405,7 @@
         /* Service Worker Registration for PWA */
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
+                navigator.serviceWorker.register('/SA-SHADOW-HUB/sw.js')
                     .then(reg => console.log('PWA Service Worker Registered', reg))
                     .catch(err => console.log('SW registration failed', err));
             });
@@ -425,6 +425,7 @@
         let currentSearchFilter = 'all';
         let currentSearchSource = 'jiosaavn';
         let lastSearchQuery = '';
+        let lastVolume = 1;
         const audio = new Audio();
 
         const API_BASE_URL = "https://musicapi-le65.onrender.com";
@@ -861,7 +862,11 @@
             }
         }
 
-        function changeVolume(val) { audio.volume = parseFloat(val); }
+        function changeVolume(val) { 
+            audio.volume = parseFloat(val);
+            const slider = document.getElementById('volumeSlider');
+            if(slider) slider.value = val;
+        }
 
         function seekAudio(e) {
             const width = e.currentTarget.clientWidth;
@@ -1271,6 +1276,67 @@
                 document.getElementById('settings-view').style.display = 'block';
             }
         }
+
+        /* Keyboard Shortcuts Handler */
+        document.addEventListener('keydown', (e) => {
+            // Check if user is typing in an input field or text area
+            const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+            if (activeTag === 'input' || activeTag === 'textarea') return;
+
+            switch(e.code) {
+                case 'Space':
+                    e.preventDefault();
+                    togglePlay();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    nextSong();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    prevSong();
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    let volUp = Math.min(1, audio.volume + 0.05);
+                    changeVolume(volUp);
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    let volDown = Math.max(0, audio.volume - 0.05);
+                    changeVolume(volDown);
+                    break;
+                case 'KeyM':
+                    e.preventDefault();
+                    if (audio.volume > 0) {
+                        lastVolume = audio.volume;
+                        changeVolume(0);
+                    } else {
+                        changeVolume(lastVolume || 1);
+                    }
+                    break;
+                case 'KeyL':
+                    e.preventDefault();
+                    toggleLike();
+                    break;
+                case 'KeyS':
+                    e.preventDefault();
+                    toggleGlobalShuffle();
+                    break;
+                case 'KeyR':
+                    e.preventDefault();
+                    toggleLoop();
+                    break;
+                case 'Escape':
+                    e.preventDefault();
+                    closeFullPlayer();
+                    closePlaylistModal();
+                    closeCreatePlaylistModal();
+                    closePlaylistSettings();
+                    document.getElementById('playlistSelectModal').style.display = 'none';
+                    break;
+            }
+        });
 
         let searchTimeout;
         const searchInput = document.getElementById('searchInput');
