@@ -137,7 +137,7 @@
         .close-playlist-modal { background: none; border: none; color: var(--white); font-size: 1.4rem; cursor: pointer; align-self: flex-start; margin-bottom: 10px; }
 
         .playlist-container-inner { display: flex; flex-direction: column; max-width: 700px; margin: 0 auto; width: 100%; gap: 20px; padding-bottom: 40px; }
-        .playlist-top-details { display: flex; flex-direction: column; align-items: center; text-align: center; background: rgba(25, 20, 32, 0.6); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); }
+        .playlist-top-details { display: flex; flex-direction: column; align-items: center; text-align: center; background: rgba(25, 20, 32, 0.6); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); position: relative; }
         .hero-cover { width: 160px; height: 160px; border-radius: 14px; object-fit: cover; box-shadow: 0 10px 25px rgba(0,0,0,0.6); margin-bottom: 12px; }
         .hero-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 4px; word-break: break-word; }
         .hero-subtitle { color: var(--text-gray); font-size: 0.75rem; margin-bottom: 15px; }
@@ -146,6 +146,9 @@
         .hero-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--card-black); border: 1px solid var(--border-color); color: var(--text-gray); display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .hero-btn.play-main { width: 44px; height: 44px; background: var(--neon-pink); color: var(--white); font-size: 1rem; box-shadow: 0 0 15px rgba(255, 42, 95, 0.5); }
         .download-playlist-btn { background: rgba(255, 30, 56, 0.2); border: 1px solid var(--neon-red); color: var(--white); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+
+        .playlist-settings-btn { position: absolute; top: 15px; right: 15px; background: var(--card-black); border: var(--metallic-border); color: var(--white); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem; }
+        .playlist-settings-btn:hover { background: var(--neon-red); }
 
         .playlist-bottom-tracks { flex: 1; background: rgba(20, 18, 28, 0.5); border-radius: 16px; padding: 15px; border: 1px solid var(--border-color); width: 100%; }
         .track-list { list-style: none; width: 100%; }
@@ -163,44 +166,53 @@
         .mini-left img { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
         .mini-info { min-width: 0; flex: 1; }
         .mini-info h4 { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .mini-info p { font-size: 0.7rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-info p { font-size: 0.70rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .progress-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: #222; cursor: pointer; }
         .progress-bar { height: 100%; background: var(--neon-red); width: 0%; transition: width 0.1s linear; }
 
         .full-player-modal { position: fixed; top: 100%; left: 0; width: 100vw; height: 100%; background: radial-gradient(circle at center, #250c14 0%, var(--bg-black) 100%); z-index: 2000; transition: top 0.35s ease-in-out; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; }
         .full-player-modal.active { top: 0; }
-        .close-modal { background: none; border: none; color: var(--white); font-size: 1.4rem; cursor: pointer; align-self: flex-start; margin-bottom: 5px; }
+        
+        .full-player-top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1000px; margin: 0 auto 10px auto; }
+        .close-modal { background: none; border: none; color: var(--white); font-size: 1.4rem; cursor: pointer; }
         
         .full-player-content { display: flex; flex-direction: row; flex: 1; max-width: 1100px; margin: 0 auto; width: 100%; gap: 30px; align-items: center; justify-content: center; }
         .player-main-col { flex: 1.2; display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; }
         
-        .vinyl-container { width: 190px; height: 190px; border-radius: 50%; background: #000; border: 5px solid #222; box-shadow: 0 12px 25px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; margin-bottom: 15px; }
-        .vinyl-disc { width: 100%; height: 100%; border-radius: 50%; position: relative; overflow: hidden; animation: rotateVinyl 8s linear infinite; animation-play-state: paused; }
-        .vinyl-disc.playing { animation-play-state: running; }
-        .vinyl-disc img { width: 100%; height: 100%; object-fit: cover; }
-        @keyframes rotateVinyl { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .square-art-container { width: 220px; height: 220px; border-radius: 12px; background: #000; border: var(--metallic-border); box-shadow: 0 12px 25px rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; margin-bottom: 15px; overflow: hidden; }
+        .square-art-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        .main-controls { display: flex; align-items: center; gap: 16px; margin: 10px 0; font-size: 1.1rem; flex-wrap: wrap; justify-content: center; }
-        .main-controls button { background: none; border: none; color: var(--text-gray); font-size: 1.2rem; cursor: pointer; }
+        /* Unified Single Row Controls */
+        .main-controls { display: flex; align-items: center; justify-content: center; gap: 24px; margin: 15px 0; font-size: 1.2rem; width: 100%; }
+        .main-controls button { background: none; border: none; color: var(--text-gray); font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
         .main-controls button:hover, .main-controls button.active-mode { color: var(--neon-red); }
-        .big-play { width: 52px; height: 52px; background: var(--neon-red) !important; color: var(--white) !important; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.3rem !important; }
+        .big-play { width: 54px; height: 54px; background: var(--neon-red) !important; color: var(--white) !important; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.3rem !important; box-shadow: 0 0 15px rgba(255,30,56,0.5); }
 
-        .full-progress-container { width: 100%; max-width: 350px; margin-bottom: 10px; }
+        .full-progress-container { width: 100%; max-width: 380px; margin-bottom: 10px; }
         .seek-bar-wrapper { width: 100%; height: 5px; background: #333; border-radius: 3px; cursor: pointer; position: relative; margin-bottom: 5px; }
         .seek-bar { height: 100%; background: var(--neon-red); border-radius: 3px; width: 0%; }
         .time-info { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-gray); }
 
         .player-queue-col { flex: 0.9; background: rgba(20, 20, 20, 0.7); border: var(--metallic-border); border-radius: 12px; padding: 15px; height: 400px; overflow-y: auto; width: 100%; }
-        .player-queue-col h3 { font-size: 0.9rem; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px; }
+        .player-queue-col h3 { font-size: 0.9rem; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 
-        .queue-item-style { padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.03); width: 100%; }
+        .queue-item-style { padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; background: rgba(255,255,255,0.03); width: 100%; cursor: grab; }
+        .queue-item-style:active { cursor: grabbing; }
         .queue-item-style.playing-queue { background: rgba(255, 30, 56, 0.15); border: 1px solid var(--neon-red); color: var(--white); }
-        .queue-item-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; cursor: pointer; }
+        .queue-item-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
         .queue-item-left img { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
         .queue-item-info { min-width: 0; flex: 1; }
         .queue-item-info .q-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; }
         .queue-item-info .q-artist { font-size: 0.7rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .mobile-queue-btn { display: none; background: #000; border: 1px solid rgba(255,255,255,0.15); color: var(--white); padding: 8px 20px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); margin-top: 15px; }
+
+        .mobile-queue-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 3500; display: none; align-items: flex-end; }
+        .mobile-queue-modal.active { display: flex; }
+        .mobile-queue-content { background: var(--panel-black); border-top: var(--metallic-border); border-top-left-radius: 20px; border-top-right-radius: 20px; width: 100%; max-height: 60vh; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
+        .mobile-queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: 700; font-size: 0.95rem; }
+        .close-mobile-queue { background: none; border: none; color: var(--white); font-size: 1.2rem; cursor: pointer; }
 
         .context-menu { position: fixed; background: #16161f; border: var(--metallic-border); border-radius: 14px; padding: 8px 0; width: 220px; z-index: 4000; display: none; box-shadow: 0 12px 30px rgba(0,0,0,0.7); backdrop-filter: blur(10px); }
         .context-menu-item { padding: 10px 16px; font-size: 0.82rem; color: var(--white); cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
@@ -220,21 +232,25 @@
             .app-container { padding-bottom: 125px; }
             .full-player-content { flex-direction: column; justify-content: flex-start; gap: 10px; padding-top: 5px; }
             .player-queue-col { display: none; }
-            .vinyl-container { width: 160px; height: 160px; margin-bottom: 10px; }
+            .mobile-queue-btn { display: flex; }
+            .square-art-container { width: 180px; height: 180px; margin-bottom: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Hidden YouTube Iframe Player for 100% working YouTube audio playback -->
-    <div id="youtube-player-container" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;">
+    <!-- Hidden YouTube Iframe Player -->
+    <div id="youtube-player-container" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden; opacity: 0;">
         <div id="yt-hidden-player"></div>
     </div>
+
+    <!-- Hidden file input for playlist import -->
+    <input type="file" id="importPlaylistFile" accept=".json" style="display:none;" onchange="handlePlaylistImport(event)">
 
     <div class="app-container">
         <aside class="sidebar">
             <div class="sidebar-icon active" onclick="switchTab('home', this)" title="Home"><i class="fa-solid fa-house"></i></div>
-            <div class="sidebar-icon" onclick="switchTab('search', this)" title="Search"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div class="sidebar-icon" onclick="switchTab('search', this)" title="Search (S)"><i class="fa-solid fa-magnifying-glass"></i></div>
             <div class="sidebar-icon" onclick="switchTab('discover', this)" title="Discover"><i class="fa-solid fa-compass"></i></div>
             <div class="sidebar-icon" onclick="switchTab('playlists', this)" title="Library & Playlists"><i class="fa-solid fa-book-bookmark"></i></div>
             <div class="sidebar-icon" onclick="switchTab('offline', this)" title="Offline Player"><i class="fa-solid fa-download"></i></div>
@@ -271,8 +287,8 @@
                 <div class="search-filters-container">
                     <div class="search-source-row">
                         <span style="font-size: 0.75rem; color: var(--text-gray); font-weight: 600; margin-right: 5px;">Source:</span>
-                        <div class="source-pill active" id="sourceJio" onclick="setSearchSource('jiosaavn', this)">JioSaavn</div>
-                        <div class="source-pill" id="sourceYt" onclick="setSearchSource('youtube', this)">YouTube</div>
+                        <div class="source-pill" id="sourceJio" onclick="setSearchSource('jiosaavn', this)">JioSaavn</div>
+                        <div class="source-pill active" id="sourceYt" onclick="setSearchSource('youtube', this)">YouTube</div>
                     </div>
                     <div class="search-filters">
                         <div class="filter-pill active" onclick="setSearchFilter('all', this)">All</div>
@@ -310,7 +326,7 @@
                 <div class="song-grid" id="offlineGrid"></div>
             </div>
 
-            <div id="settings-view" class="view-section" style="display:block;">
+            <div id="settings-view" class="view-section" style="display:none;">
                 <div class="section-title">App Settings & Preferences</div>
                 
                 <div class="settings-card" onclick="openSettingsSubView('plugins')">
@@ -495,6 +511,7 @@
         <button class="close-playlist-modal" onclick="closePlaylistModal()"><i class="fa-solid fa-chevron-down"></i></button>
         <div class="playlist-container-inner">
             <div class="playlist-top-details">
+                <div class="playlist-settings-btn" onclick="openPlaylistSettings()" title="Edit Playlist Settings"><i class="fa-solid fa-gear"></i></div>
                 <img id="heroCoverImg" class="hero-cover" src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500" alt="Cover">
                 <div class="hero-title" id="heroTitle">Playlist Name</div>
                 <div class="hero-subtitle" id="heroSubtitle">Custom Playlist</div>
@@ -514,17 +531,29 @@
     </div>
 
     <div class="full-player-modal" id="fullPlayerModal">
-        <button class="close-modal" onclick="closeFullPlayer()"><i class="fa-solid fa-chevron-down"></i></button>
+        <div class="full-player-top-bar">
+            <button class="close-modal" onclick="closeFullPlayer()"><i class="fa-solid fa-chevron-down"></i></button>
+            <div style="font-size: 0.75rem; color: var(--text-gray); text-align: center;">
+                <div>Enjoying From</div>
+                <div id="enjoyingFromName" style="color: var(--white); font-weight: 600;">Void Echo</div>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <button onclick="openMobileQueueModal()" style="background:none; border:none; color:var(--white); font-size:1.1rem; cursor:pointer;" title="Queue"><i class="fa-solid fa-list"></i></button>
+                <button onclick="openContextMenu(event, songs[currentIndex], currentIndex, false)" style="background:none; border:none; color:var(--white); font-size:1.1rem; cursor:pointer;" title="Options"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+            </div>
+        </div>
+
         <div class="full-player-content">
             <div class="player-main-col">
-                <div class="vinyl-container">
-                    <div class="vinyl-disc" id="vinylDisc">
-                        <img id="fullImg" src="" alt="Album Art">
-                    </div>
+                <div class="square-art-container">
+                    <img id="fullImg" src="" alt="Album Art">
                 </div>
-                <div style="margin-bottom: 10px;">
-                    <h2 id="fullTitle" style="font-size: 1rem;">Song Title</h2>
-                    <p id="fullArtist" style="color:var(--text-gray); font-size:0.75rem;">Artist Name</p>
+                <div style="margin-bottom: 8px; width: 100%; max-width: 380px; text-align: left; padding: 0 10px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="min-width: 0; flex: 1;">
+                        <h2 id="fullTitle" style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Song Title</h2>
+                        <p id="fullArtist" style="color:var(--text-gray); font-size:0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Artist Name</p>
+                    </div>
+                    <button id="likeBtn" onclick="toggleLike()" style="background:none; border:none; color:var(--neon-red); font-size:1.3rem; cursor:pointer; padding-left:10px;"><i class="fa-regular fa-heart"></i></button>
                 </div>
 
                 <div class="full-progress-container">
@@ -537,20 +566,37 @@
                     </div>
                 </div>
 
+                <!-- Unified Single Row Controls (Shuffle, Prev, Play/Pause, Next, Loop) -->
                 <div class="main-controls">
-                    <button id="shuffleBtn" onclick="toggleGlobalShuffle()"><i class="fa-solid fa-shuffle"></i></button>
-                    <button onclick="prevSong()"><i class="fa-solid fa-backward"></i></button>
-                    <button class="big-play" id="fullPlayBtn" onclick="togglePlay()"><i class="fa-solid fa-play"></i></button>
-                    <button onclick="nextSong()"><i class="fa-solid fa-forward"></i></button>
-                    <button id="loopBtn" onclick="toggleLoop()"><i class="fa-solid fa-repeat"></i></button>
-                    <button id="likeBtn" onclick="toggleLike()"><i class="fa-regular fa-heart"></i></button>
+                    <button id="shuffleBtn" onclick="toggleGlobalShuffle()" title="Shuffle"><i class="fa-solid fa-shuffle"></i></button>
+                    <button onclick="prevSong()" title="Previous"><i class="fa-solid fa-backward-step"></i></button>
+                    <button class="big-play" id="fullPlayBtn" onclick="togglePlay()" title="Play/Pause"><i class="fa-solid fa-play"></i></button>
+                    <button onclick="nextSong()" title="Next"><i class="fa-solid fa-forward-step"></i></button>
+                    <button id="loopBtn" onclick="toggleLoop()" title="Repeat"><i class="fa-solid fa-repeat"></i></button>
                 </div>
+
+                <button class="mobile-queue-btn" onclick="openMobileQueueModal()">
+                    <i class="fa-solid fa-list-ul"></i> Up Next <i class="fa-solid fa-chevron-up" style="font-size:0.6rem;"></i>
+                </button>
             </div>
             
             <div class="player-queue-col">
-                <h3><span><i class="fa-solid fa-list-ul"></i> Next Up Queue</span></h3>
+                <h3>
+                    <span><i class="fa-solid fa-list-ul"></i> Up Next Queue</span>
+                    <span style="font-size:0.7rem; color:var(--text-gray);">Drag to reorder</span>
+                </h3>
                 <ul id="queueList"></ul>
             </div>
+        </div>
+    </div>
+
+    <div class="mobile-queue-modal" id="mobileQueueModal">
+        <div class="mobile-queue-content">
+            <div class="mobile-queue-header">
+                <span><i class="fa-solid fa-list-ul" style="color:var(--neon-red);"></i> Up Next Queue</span>
+                <button class="close-mobile-queue" onclick="closeMobileQueueModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <ul id="mobileQueueList" style="list-style:none; width:100%;"></ul>
         </div>
     </div>
 
@@ -558,9 +604,33 @@
         <div class="context-menu-item" onclick="contextPlayNext()"><i class="fa-solid fa-play"></i> Play Next</div>
         <div class="context-menu-item" onclick="contextAddToQueue()"><i class="fa-solid fa-list-check"></i> Add to Queue</div>
         <div class="context-menu-item" onclick="contextToggleLike()"><i class="fa-solid fa-heart"></i> Add to Favorites</div>
+        <div class="context-menu-item" onclick="contextOpenAddToPlaylist()"><i class="fa-solid fa-folder-plus"></i> Add to Playlist</div>
         <div class="context-menu-item" onclick="contextDownloadSong()"><i class="fa-solid fa-download"></i> Available Offline</div>
         <div class="context-menu-item" onclick="contextShare()"><i class="fa-solid fa-share-nodes"></i> Share</div>
-        <div class="context-menu-item" id="contextDeleteRow" style="display:none; color: var(--neon-red);" onclick="contextDeleteFromPlaylist()"><i class="fa-solid fa-trash"></i> Delete from Playlist</div>
+        <div class="context-menu-item" id="contextDeleteRow" style="display:none; color: var(--neon-red);" onclick="contextDeleteFromPlaylist()"><i class="fa-solid fa-trash"></i> Remove from Playlist</div>
+    </div>
+
+    <div class="modal-overlay" id="addToPlaylistSelectorModal">
+        <div class="modal-card">
+            <h3>Add to Playlist</h3>
+            <div id="playlistSelectorList" style="max-height: 200px; overflow-y: auto; margin: 15px 0; text-align: left;"></div>
+            <button onclick="closeAddToPlaylistSelector()" style="background:#333; width:100%;">Cancel</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="playlistSettingsModal">
+        <div class="modal-card">
+            <h3>Edit Playlist Settings</h3>
+            <div style="margin: 15px 0; text-align: left;">
+                <label style="font-size:0.8rem; color:var(--text-gray);">Playlist Name</label>
+                <input type="text" id="editPlaylistNameInput" placeholder="New Playlist Name...">
+                
+                <label style="font-size:0.8rem; color:var(--text-gray); display:block; margin-top:10px;">Upload Custom Image / Logo URL</label>
+                <input type="text" id="editPlaylistCoverInput" placeholder="Image URL (https://...)">
+            </div>
+            <button onclick="savePlaylistSettings()">Save Changes</button>
+            <button onclick="closePlaylistSettings()" style="background:#333; margin-top:8px; width:100%;">Cancel</button>
+        </div>
     </div>
 
     <div class="modal-overlay" id="createPlaylistModal">
@@ -568,7 +638,7 @@
             <h3>Create New Playlist</h3>
             <input type="text" id="newPlaylistName" placeholder="Playlist Name...">
             <button onclick="saveNewPlaylist()">Create</button>
-            <button onclick="closeCreatePlaylistModal()" style="background:#333; margin-top:8px;">Cancel</button>
+            <button onclick="closeCreatePlaylistModal()" style="background:#333; margin-top:8px; width:100%;">Cancel</button>
         </div>
     </div>
 
@@ -590,31 +660,33 @@
         let contextMenuSong = null;
         let contextMenuSongIndex = -1;
         let currentSearchFilter = 'all';
-        let currentSearchSource = 'jiosaavn';
+        let currentSearchSource = 'youtube';
         let lastSearchQuery = '';
 
-        // Audio and YouTube Player variables
         const audio = new Audio();
         let ytPlayer = null;
         let isYTPlayerReady = false;
-        let playbackMode = 'html5'; // 'html5' or 'youtube'
+        let playbackMode = 'html5'; 
         let progressInterval = null;
 
         const API_BASE_URL = "https://musicapi-le65.onrender.com";
-        const YOUTUBE_API_KEY = "AIzaSyCYSv1z1cVNTU5xF50y9RqvJGKzh_lLz8Y";
+        const YOUTUBE_API_KEY = "AIzaSyBp0s5oV3II2TAG1J8ZomRs0jeUm4d5m98";
 
-        // Initialize YouTube IFrame API
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('yt-hidden-player', {
                 height: '100',
                 width: '100',
-                playerVars: {
-                    'playsinline': 1,
-                    'controls': 0
-                },
+                playerVars: { 'playsinline': 1, 'controls': 0, 'autoplay': 1 },
                 events: {
-                    'onReady': () => { isYTPlayerReady = true; },
-                    'onStateChange': onYTPlayerStateChange
+                    'onReady': () => { 
+                        isYTPlayerReady = true; 
+                        console.log("YouTube Player Ready!"); 
+                    },
+                    'onStateChange': onYTPlayerStateChange,
+                    'onError': (e) => {
+                        console.error("YouTube Player Error:", e);
+                        nextSong();
+                    }
                 }
             });
         }
@@ -622,22 +694,21 @@
         function onYTPlayerStateChange(event) {
             if (event.data === YT.PlayerState.PLAYING) {
                 isPlaying = true;
-                document.getElementById('vinylDisc').classList.add('playing');
                 document.getElementById('miniPlayBtn').innerHTML = '<i class="fa-solid fa-pause"></i>';
                 document.getElementById('fullPlayBtn').innerHTML = '<i class="fa-solid fa-pause"></i>';
                 startYTProgressTracker();
             } else if (event.data === YT.PlayerState.PAUSED) {
                 isPlaying = false;
-                document.getElementById('vinylDisc').classList.remove('playing');
                 document.getElementById('miniPlayBtn').innerHTML = '<i class="fa-solid fa-play"></i>';
                 document.getElementById('fullPlayBtn').innerHTML = '<i class="fa-solid fa-play"></i>';
                 stopYTProgressTracker();
             } else if (event.data === YT.PlayerState.ENDED) {
                 stopYTProgressTracker();
-                if(isLoop) {
-                    ytPlayer.playVideo();
-                } else {
-                    nextSong();
+                if(isLoop) { 
+                    ytPlayer.seekTo(0);
+                    ytPlayer.playVideo(); 
+                } else { 
+                    nextSong(); 
                 }
             }
         }
@@ -819,6 +890,12 @@
                 const response = await fetch(url);
                 const data = await response.json();
                 
+                if (data.error) {
+                    console.error("YouTube API Error:", data.error.message);
+                    document.getElementById('searchTitle').innerText = `YouTube API Error: ${data.error.message}`;
+                    return;
+                }
+                
                 if (data.items) {
                     if(currentSearchFilter === 'playlists') {
                         const ytPlaylists = data.items.map(item => ({
@@ -848,7 +925,7 @@
                     }
                 }
             } catch (error) {
-                console.error("YouTube Search Error:", error);
+                console.error("YouTube Search Network Error:", error);
             }
         }
 
@@ -922,7 +999,6 @@
             const song = songs[index];
             if(!song) return;
 
-            // Stop previous audio or YT player
             audio.pause();
             if(isYTPlayerReady && ytPlayer && ytPlayer.stopVideo) {
                 try { ytPlayer.stopVideo(); } catch(e){}
@@ -934,6 +1010,11 @@
             document.getElementById('fullImg').src = song.img;
             document.getElementById('fullTitle').innerText = song.title;
             document.getElementById('fullArtist').innerText = "Loading track...";
+            
+            const enjoyingEl = document.getElementById('enjoyingFromName');
+            if(enjoyingEl) {
+                enjoyingEl.innerText = activePlaylist ? activePlaylist.name : song.title;
+            }
 
             if (song.isYouTube) {
                 playbackMode = 'youtube';
@@ -956,14 +1037,15 @@
             const song = songs[currentIndex];
 
             if (playbackMode === 'youtube') {
-                if(isYTPlayerReady && ytPlayer) {
-                    ytPlayer.loadVideoById(song.id);
+                if(isYTPlayerReady && ytPlayer && ytPlayer.loadVideoById) {
+                    ytPlayer.loadVideoById({ 'videoId': song.id });
                     ytPlayer.playVideo();
+                } else {
+                    setTimeout(() => playSong(), 1000);
                 }
             } else {
                 audio.play().then(() => {
                     isPlaying = true;
-                    document.getElementById('vinylDisc').classList.add('playing');
                     document.getElementById('miniPlayBtn').innerHTML = '<i class="fa-solid fa-pause"></i>';
                     document.getElementById('fullPlayBtn').innerHTML = '<i class="fa-solid fa-pause"></i>';
                 }).catch(e => {
@@ -974,13 +1056,10 @@
 
         function pauseSong() {
             if (playbackMode === 'youtube') {
-                if(isYTPlayerReady && ytPlayer) {
-                    ytPlayer.pauseVideo();
-                }
+                if(isYTPlayerReady && ytPlayer) { ytPlayer.pauseVideo(); }
             } else {
                 audio.pause();
                 isPlaying = false;
-                document.getElementById('vinylDisc').classList.remove('playing');
                 document.getElementById('miniPlayBtn').innerHTML = '<i class="fa-solid fa-play"></i>';
                 document.getElementById('fullPlayBtn').innerHTML = '<i class="fa-solid fa-play"></i>';
             }
@@ -1004,7 +1083,8 @@
 
         function toggleGlobalShuffle() {
             isShuffle = !isShuffle;
-            document.getElementById('shuffleBtn').classList.toggle('active-mode', isShuffle);
+            const shuffleBtn = document.getElementById('shuffleBtn');
+            if(shuffleBtn) shuffleBtn.classList.toggle('active-mode', isShuffle);
         }
 
         async function playPlaylistSequential() {
@@ -1027,7 +1107,8 @@
 
         function toggleLoop() {
             isLoop = !isLoop;
-            document.getElementById('loopBtn').classList.toggle('active-mode', isLoop);
+            const loopBtn = document.getElementById('loopBtn');
+            if(loopBtn) loopBtn.classList.toggle('active-mode', isLoop);
         }
 
         function toggleLike() {
@@ -1182,6 +1263,7 @@
                 likeBtnIcon.style.color = "var(--neon-red)";
             }
             localStorage.setItem('customPl', JSON.stringify(customPlaylists));
+            renderPlaylistsLibrary();
         }
 
         function downloadEntirePlaylist() {
@@ -1223,13 +1305,13 @@
             });
         }
 
-        function openContextMenu(e, song, idx = -1, isCustomPlaylist = false) {
+        function openContextMenu(e, song, idx = -1, isCustomPlaylistView = false) {
             contextMenuSong = song;
             contextMenuSongIndex = idx;
             const menu = document.getElementById('songContextMenu');
             const deleteRow = document.getElementById('contextDeleteRow');
             
-            if (isCustomPlaylist && activePlaylistIndex >= 0) {
+            if (isCustomPlaylistView && activePlaylistIndex >= 0) {
                 deleteRow.style.display = 'flex';
             } else {
                 deleteRow.style.display = 'none';
@@ -1267,6 +1349,35 @@
             }
         }
 
+        function contextOpenAddToPlaylist() {
+            if(!contextMenuSong) return;
+            const selectorList = document.getElementById('playlistSelectorList');
+            selectorList.innerHTML = '';
+
+            if(customPlaylists.length === 0) {
+                selectorList.innerHTML = `<p style="font-size:0.8rem; color:var(--text-gray); text-align:center;">No playlists created yet. Create one from Library!</p>`;
+            } else {
+                customPlaylists.forEach((pl) => {
+                    const item = document.createElement('div');
+                    item.style.cssText = "padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;";
+                    item.innerHTML = `<span><i class="fa-solid fa-list" style="margin-right:8px; color:var(--neon-red);"></i> ${pl.name}</span> <span style="font-size:0.7rem; color:var(--text-gray);">${pl.songs.length} songs</span>`;
+                    item.onclick = () => {
+                        if(!pl.songs.some(s => s.id === contextMenuSong.id)) {
+                            pl.songs.push(contextMenuSong);
+                            localStorage.setItem('customPl', JSON.stringify(customPlaylists));
+                        }
+                        closeAddToPlaylistSelector();
+                    };
+                    selectorList.appendChild(item);
+                });
+            }
+            document.getElementById('addToPlaylistSelectorModal').style.display = 'flex';
+        }
+
+        function closeAddToPlaylistSelector() {
+            document.getElementById('addToPlaylistSelectorModal').style.display = 'none';
+        }
+
         function contextDownloadSong() {
             if(contextMenuSong) {
                 if(!downloadedSongs.some(s => s.id === contextMenuSong.id)) {
@@ -1292,24 +1403,101 @@
             }
         }
 
+        function openPlaylistSettings() {
+            if(activePlaylistIndex < 0) {
+                alert("Default or system playlists cannot be edited!");
+                return;
+            }
+            const pl = customPlaylists[activePlaylistIndex];
+            document.getElementById('editPlaylistNameInput').value = pl.name;
+            document.getElementById('editPlaylistCoverInput').value = pl.cover || "";
+            document.getElementById('playlistSettingsModal').style.display = 'flex';
+        }
+
+        function closePlaylistSettings() {
+            document.getElementById('playlistSettingsModal').style.display = 'none';
+        }
+
+        function savePlaylistSettings() {
+            if(activePlaylistIndex < 0) return;
+            const newName = document.getElementById('editPlaylistNameInput').value.trim();
+            const newCover = document.getElementById('editPlaylistCoverInput').value.trim();
+
+            if(newName) {
+                customPlaylists[activePlaylistIndex].name = newName;
+                activePlaylist.name = newName;
+                document.getElementById('heroTitle').innerText = newName;
+            }
+            if(newCover) {
+                customPlaylists[activePlaylistIndex].cover = newCover;
+                activePlaylist.cover = newCover;
+                document.getElementById('heroCoverImg').src = newCover;
+            }
+
+            localStorage.setItem('customPl', JSON.stringify(customPlaylists));
+            closePlaylistSettings();
+            renderPlaylistsLibrary();
+        }
+
         function renderQueue() {
             const queueList = document.getElementById('queueList');
-            if(!queueList) return;
-            queueList.innerHTML = '';
-            songs.forEach((song, idx) => {
-                const li = document.createElement('li');
-                li.className = `queue-item-style ${idx === currentIndex ? 'playing-queue' : ''}`;
-                li.innerHTML = `
-                    <div class="queue-item-left" onclick="currentIndex = ${idx}; loadSong(currentIndex).then(() => playSong());">
-                        <img src="${song.img}" alt="">
-                        <div class="queue-item-info">
-                            <div class="q-title">${song.title}</div>
-                            <div class="q-artist">${song.artist}</div>
+            const mobileQueueList = document.getElementById('mobileQueueList');
+            
+            [queueList, mobileQueueList].forEach(container => {
+                if(!container) return;
+                container.innerHTML = '';
+                songs.forEach((song, idx) => {
+                    const li = document.createElement('li');
+                    li.className = `queue-item-style ${idx === currentIndex ? 'playing-queue' : ''}`;
+                    li.draggable = true;
+                    li.dataset.index = idx;
+                    li.innerHTML = `
+                        <div class="queue-item-left" onclick="currentIndex = ${idx}; loadSong(currentIndex).then(() => playSong());">
+                            <img src="${song.img}" alt="">
+                            <div class="queue-item-info">
+                                <div class="q-title">${song.title}</div>
+                                <div class="q-artist">${song.artist}</div>
+                            </div>
                         </div>
-                    </div>
-                `;
-                queueList.appendChild(li);
+                        <i class="fa-solid fa-ellipsis-vertical" style="color:var(--text-gray); cursor:pointer; padding:5px;" onclick="event.stopPropagation(); openContextMenu(event, ${JSON.stringify(song).replace(/"/g, '&quot;')}, ${idx}, false)"></i>
+                    `;
+
+                    li.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', idx);
+                    });
+                    li.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                    });
+                    li.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+                        const toIdx = idx;
+                        if (fromIdx !== toIdx) {
+                            const movedSong = songs.splice(fromIdx, 1)[0];
+                            songs.splice(toIdx, 0, movedSong);
+                            if (currentIndex === fromIdx) {
+                                currentIndex = toIdx;
+                            } else if (currentIndex > fromIdx && currentIndex <= toIdx) {
+                                currentIndex--;
+                            } else if (currentIndex < fromIdx && currentIndex >= toIdx) {
+                                currentIndex++;
+                            }
+                            renderQueue();
+                        }
+                    });
+
+                    container.appendChild(li);
+                });
             });
+        }
+
+        function openMobileQueueModal() {
+            renderQueue();
+            document.getElementById('mobileQueueModal').classList.add('active');
+        }
+
+        function closeMobileQueueModal() {
+            document.getElementById('mobileQueueModal').classList.remove('active');
         }
 
         function renderPlaylistsLibrary() {
@@ -1435,13 +1623,8 @@
             closeThemesModal();
         }
 
-        function changeAppLanguage(lang) {
-            localStorage.setItem('appLang', lang);
-        }
-
-        function changeCountry(country) {
-            localStorage.setItem('appCountry', country);
-        }
+        function changeAppLanguage(lang) { localStorage.setItem('appLang', lang); }
+        function changeCountry(country) { localStorage.setItem('appCountry', country); }
 
         const samplePlugins = [
             { name: "apple-music-importer", author: "bloomfactory • v1", enabled: true },
