@@ -313,30 +313,6 @@
             <div id="settings-view" class="view-section" style="display:block;">
                 <div class="section-title">App Settings & Preferences</div>
                 
-                <!-- Playlist Backup & Restore Options -->
-                <div class="settings-card" onclick="backupPlaylists()">
-                    <div class="settings-left">
-                        <div class="settings-icon-box"><i class="fa-solid fa-file-arrow-down"></i></div>
-                        <div class="settings-info">
-                            <h4>Backup Playlists</h4>
-                            <p>Export your playlists & favorites as a JSON file.</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-download" style="color:var(--text-gray); font-size:0.8rem;"></i>
-                </div>
-
-                <div class="settings-card" onclick="document.getElementById('importFile').click()">
-                    <div class="settings-left">
-                        <div class="settings-icon-box"><i class="fa-solid fa-file-arrow-up"></i></div>
-                        <div class="settings-info">
-                            <h4>Import Playlists</h4>
-                            <p>Restore playlists from a backup JSON file.</p>
-                        </div>
-                    </div>
-                    <input type="file" id="importFile" style="display:none" accept=".json" onchange="importPlaylists(event)">
-                    <i class="fa-solid fa-upload" style="color:var(--text-gray); font-size:0.8rem;"></i>
-                </div>
-
                 <div class="settings-card" onclick="openSettingsSubView('plugins')">
                     <div class="settings-left">
                         <div class="settings-icon-box"><i class="fa-solid fa-puzzle-piece"></i></div>
@@ -617,20 +593,25 @@
         let currentSearchSource = 'jiosaavn';
         let lastSearchQuery = '';
 
+        // Audio and YouTube Player variables
         const audio = new Audio();
         let ytPlayer = null;
         let isYTPlayerReady = false;
-        let playbackMode = 'html5';
+        let playbackMode = 'html5'; // 'html5' or 'youtube'
         let progressInterval = null;
 
         const API_BASE_URL = "https://musicapi-le65.onrender.com";
         const YOUTUBE_API_KEY = "AIzaSyCYSv1z1cVNTU5xF50y9RqvJGKzh_lLz8Y";
 
+        // Initialize YouTube IFrame API
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('yt-hidden-player', {
                 height: '100',
                 width: '100',
-                playerVars: { 'playsinline': 1, 'controls': 0 },
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 0
+                },
                 events: {
                     'onReady': () => { isYTPlayerReady = true; },
                     'onStateChange': onYTPlayerStateChange
@@ -653,8 +634,11 @@
                 stopYTProgressTracker();
             } else if (event.data === YT.PlayerState.ENDED) {
                 stopYTProgressTracker();
-                if(isLoop) ytPlayer.playVideo();
-                else nextSong();
+                if(isLoop) {
+                    ytPlayer.playVideo();
+                } else {
+                    nextSong();
+                }
             }
         }
 
@@ -938,6 +922,7 @@
             const song = songs[index];
             if(!song) return;
 
+            // Stop previous audio or YT player
             audio.pause();
             if(isYTPlayerReady && ytPlayer && ytPlayer.stopVideo) {
                 try { ytPlayer.stopVideo(); } catch(e){}
@@ -1305,47 +1290,6 @@
                 renderPlaylistTracklist();
                 renderPlaylistsLibrary();
             }
-        }
-
-        // --- Playlist Backup & Import Functions ---
-        function backupPlaylists() {
-            const backupData = {
-                favorites: favorites,
-                customPlaylists: customPlaylists,
-                version: "1.0",
-                date: new Date().toISOString()
-            };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `void_echo_backup_${Date.now()}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        function importPlaylists(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (imported.favorites && Array.isArray(imported.favorites)) {
-                        favorites = imported.favorites;
-                        localStorage.setItem('favSongs', JSON.stringify(favorites));
-                    }
-                    if (imported.customPlaylists && Array.isArray(imported.customPlaylists)) {
-                        customPlaylists = imported.customPlaylists;
-                        localStorage.setItem('customPl', JSON.stringify(customPlaylists));
-                    }
-                    alert("Playlists imported successfully!");
-                    renderPlaylistsLibrary();
-                } catch (err) {
-                    alert("Invalid backup file format!");
-                }
-            };
-            reader.readAsText(file);
         }
 
         function renderQueue() {
