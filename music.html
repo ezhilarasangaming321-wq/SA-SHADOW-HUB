@@ -224,7 +224,6 @@
         .modal-card input { width: 100%; padding: 8px; background: var(--card-black); border: var(--metallic-border); color: var(--white); border-radius: 6px; margin: 10px 0; outline: none; }
         .modal-card button { background: var(--neon-red); color: var(--white); border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-        /* Volume & Mute Popup Styles */
         #osdPopup {
             position: fixed;
             top: 50%;
@@ -723,6 +722,7 @@
         let isMuted = false;
         let previousVolumeBeforeMute = 100;
         let osdTimeout = null;
+        let currentLoadedSongId = null;
 
         const audio = new Audio();
         let ytPlayer = null;
@@ -1060,11 +1060,6 @@
             const song = songs[index];
             if(!song) return;
 
-            audio.pause();
-            if(isYTPlayerReady && ytPlayer && ytPlayer.stopVideo) {
-                try { ytPlayer.stopVideo(); } catch(e){}
-            }
-
             document.getElementById('miniImg').src = song.img;
             document.getElementById('miniTitle').innerText = song.title;
             document.getElementById('miniArtist').innerText = "Loading track...";
@@ -1081,11 +1076,27 @@
                 playbackMode = 'youtube';
                 document.getElementById('miniArtist').innerText = song.artist;
                 document.getElementById('fullArtist').innerText = song.artist;
+                
+                audio.pause();
+                if (currentLoadedSongId !== song.id) {
+                    currentLoadedSongId = song.id;
+                    if(isYTPlayerReady && ytPlayer && ytPlayer.loadVideoById) {
+                        ytPlayer.loadVideoById({ 'videoId': song.id });
+                    }
+                }
             } else {
                 playbackMode = 'html5';
-                audio.src = song.src;
                 document.getElementById('miniArtist').innerText = song.artist;
                 document.getElementById('fullArtist').innerText = song.artist;
+
+                if(isYTPlayerReady && ytPlayer && ytPlayer.stopVideo) {
+                    try { ytPlayer.stopVideo(); } catch(e){}
+                }
+                currentLoadedSongId = null;
+
+                if (audio.src !== song.src) {
+                    audio.src = song.src;
+                }
             }
 
             updateLikeButtonState();
@@ -1098,11 +1109,15 @@
             const song = songs[currentIndex];
 
             if (playbackMode === 'youtube') {
-                if(isYTPlayerReady && ytPlayer && ytPlayer.loadVideoById) {
-                    ytPlayer.loadVideoById({ 'videoId': song.id });
-                    ytPlayer.playVideo();
+                if(isYTPlayerReady && ytPlayer) {
+                    if (currentLoadedSongId !== song.id) {
+                        currentLoadedSongId = song.id;
+                        ytPlayer.loadVideoById({ 'videoId': song.id });
+                    } else {
+                        ytPlayer.playVideo();
+                    }
                 } else {
-                    setTimeout(() => playSong(), 1000);
+                    setTimeout(() => playSong(), 500);
                 }
             } else {
                 audio.play().then(() => {
