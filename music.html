@@ -63,6 +63,29 @@
         ::-webkit-scrollbar { display: none; }
         html, body { background-color: var(--bg-black); color: var(--white); width: 100vw; height: 100%; overflow-x: hidden; scrollbar-width: none; position: relative; }
         body { display: flex; flex-direction: column; }
+
+        /* Dynamic Ambient Glow Backdrop Effect */
+        .ambient-backdrop {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+            transition: background 1.2s ease-in-out;
+        }
+        .ambient-glow-circle {
+            position: absolute;
+            top: -20%; left: 20%;
+            width: 70vw; height: 70vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,30,56,0.18) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(80px);
+            animation: pulseAmbient 8s infinite alternate ease-in-out;
+        }
+        @keyframes pulseAmbient {
+            0% { transform: scale(0.9) translate(0, 0); opacity: 0.6; }
+            100% { transform: scale(1.15) translate(30px, 30px); opacity: 0.9; }
+        }
         
         .app-container { display: flex; flex: 1; width: 100%; min-height: calc(100vh - 70px); padding-bottom: 140px; overflow-x: hidden; }
         
@@ -231,6 +254,21 @@
         .modal-card input { width: 100%; padding: 8px; background: var(--card-black); border: var(--metallic-border); color: var(--white); border-radius: 6px; margin: 10px 0; outline: none; }
         .modal-card button { background: var(--neon-red); color: var(--white); border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
+        #importStatusModal .modal-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .import-spinner {
+            width: 40px; height: 40px;
+            border: 4px solid rgba(255,30,56,0.2);
+            border-top: 4px solid var(--neon-red);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         #osdPopup {
             position: fixed;
             top: 50%;
@@ -293,12 +331,14 @@
 </head>
 <body>
 
-    <!-- Hidden YouTube Iframe Player -->
+    <div class="ambient-backdrop" id="ambientBackdrop">
+        <div class="ambient-glow-circle" id="ambientGlowCircle"></div>
+    </div>
+
     <div id="youtube-player-container" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden; opacity: 0;">
         <div id="yt-hidden-player"></div>
     </div>
 
-    <!-- On-Screen Display (OSD) Popup for Volume & Mute -->
     <div id="osdPopup">
         <i id="osdIcon" class="fa-solid fa-volume-high"></i>
         <div id="osdText">100%</div>
@@ -307,7 +347,6 @@
         </div>
     </div>
 
-    <!-- Hidden file input for playlist import -->
     <input type="file" id="importPlaylistFile" accept=".json" style="display:none;" onchange="handlePlaylistImport(event)">
 
     <div class="app-container">
@@ -392,6 +431,17 @@
             <div id="settings-view" class="view-section" style="display:none;">
                 <div class="section-title">App Settings & Preferences</div>
                 
+                <div class="settings-card" onclick="triggerImportJSON()">
+                    <div class="settings-left">
+                        <div class="settings-icon-box"><i class="fa-solid fa-file-import"></i></div>
+                        <div class="settings-info">
+                            <h4>Import Bloomee / Custom Playlist (.json)</h4>
+                            <p>Upload JSON backup files from Bloomee or other apps</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right" style="color:var(--text-gray); font-size:0.8rem;"></i>
+                </div>
+
                 <div class="settings-card" onclick="openSettingsSubView('plugins')">
                     <div class="settings-left">
                         <div class="settings-icon-box"><i class="fa-solid fa-puzzle-piece"></i></div>
@@ -527,7 +577,6 @@
         </main>
     </div>
 
-    <!-- Themes Selection Popup Modal -->
     <div class="modal-overlay" id="themesModal" style="display:none;">
         <div class="modal-card" style="max-width: 420px;">
             <h3>Select Aesthetic Theme</h3>
@@ -549,6 +598,28 @@
                 </div>
             </div>
             <button onclick="closeThemesModal()" style="background:#333; margin-top:15px; width:100%;">Close</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="importStatusModal" style="display:none;">
+        <div class="modal-card">
+            <div id="importLoadingState">
+                <div class="import-spinner"></div>
+                <h3 style="font-size:0.95rem; margin-top:10px;">Verifying & Importing Playlist...</h3>
+                <p style="font-size:0.75rem; color:var(--text-gray);">Parsing JSON library and syncing tracks</p>
+            </div>
+            <div id="importSuccessState" style="display:none;">
+                <i class="fa-solid fa-circle-check" style="color:#00ff87; font-size:2.8rem; margin-bottom:5px;"></i>
+                <h3 style="font-size:1rem; color:#00ff87;">Playlist Imported Successfully!</h3>
+                <p id="importSuccessText" style="font-size:0.75rem; color:var(--text-gray);">Added to your Library.</p>
+                <button onclick="closeImportStatusModal(true)" style="margin-top:10px; width:100%;">Go to Playlists</button>
+            </div>
+            <div id="importFailedState" style="display:none;">
+                <i class="fa-solid fa-circle-xmark" style="color:var(--neon-red); font-size:2.8rem; margin-bottom:5px;"></i>
+                <h3 style="font-size:1rem; color:var(--neon-red);">Failed to Import Playlist</h3>
+                <p id="importFailedText" style="font-size:0.75rem; color:var(--text-gray);">Invalid JSON file format or missing tracks.</p>
+                <button onclick="closeImportStatusModal(false)" style="background:#333; margin-top:10px; width:100%;">Close</button>
+            </div>
         </div>
     </div>
 
@@ -704,7 +775,6 @@
         </div>
     </div>
 
-    <!-- YouTube IFrame API Script -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
@@ -738,13 +808,178 @@
         let progressInterval = null;
 
         const API_BASE_URL = "https://musicapi-le65.onrender.com";
-        const YOUTUBE_API_KEY = "AIzaSyBp0s5oV3II2TAG1J8ZomRs0jeUm4d5m98";
+        const YOUTUBE_API_KEY = "AIzaSyCYSv1z1cVNTU5xF50y9RqvJGKzh_lLz8Y";
 
-        // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed: ', err));
             });
+        }
+
+        function updateAmbientGlow(imageUrl) {
+            if(!imageUrl) return;
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = imageUrl;
+            img.onload = function() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 40; canvas.height = 40;
+                    ctx.drawImage(img, 0, 0, 40, 40);
+                    const data = ctx.getImageData(10, 10, 20, 20).data;
+                    let r = 0, g = 0, b = 0, count = 0;
+                    for (let i = 0; i < data.length; i += 4) {
+                        r += data[i]; g += data[i+1]; b += data[i+2]; count++;
+                    }
+                    r = Math.floor(r / count); g = Math.floor(g / count); b = Math.floor(b / count);
+                    
+                    const ambientCircle = document.getElementById('ambientGlowCircle');
+                    if (ambientCircle) {
+                        ambientCircle.style.background = `radial-gradient(circle, rgba(${r},${g},${b},0.35) 0%, rgba(0,0,0,0) 70%)`;
+                    }
+                } catch(e) {
+                    console.log("Ambient canvas color extraction fallback:", e);
+                }
+            };
+        }
+
+        function triggerImportJSON() {
+            document.getElementById('importPlaylistFile').click();
+        }
+
+        // Updated Bloomee Full Library & Playlist Backup Parser
+        function handlePlaylistImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('importLoadingState').style.display = 'block';
+            document.getElementById('importSuccessState').style.display = 'none';
+            document.getElementById('importFailedState').style.display = 'none';
+            document.getElementById('importStatusModal').style.display = 'flex';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                setTimeout(() => {
+                    try {
+                        const parsedData = JSON.parse(e.target.result);
+                        let importedPlaylists = [];
+
+                        // Handle Bloomee Full Library Backup Format (Tracks array + Playlists array with entries)
+                        if (parsedData.tracks && parsedData.playlists && Array.isArray(parsedData.playlists)) {
+                            const trackMap = new Map();
+                            parsedData.tracks.forEach(t => {
+                                if (t.mediaId) {
+                                    trackMap.set(t.mediaId, normalizeBloomeeTrack(t));
+                                }
+                            });
+
+                            parsedData.playlists.forEach(pl => {
+                                let resolvedSongs = [];
+                                if (pl.entries && Array.isArray(pl.entries)) {
+                                    pl.entries.forEach(mediaId => {
+                                        if (trackMap.has(mediaId)) {
+                                            resolvedSongs.push(trackMap.get(mediaId));
+                                        }
+                                    });
+                                }
+
+                                if (resolvedSongs.length === 0 && pl.songs) {
+                                    resolvedSongs = pl.songs.map(normalizeBloomeeTrack).filter(Boolean);
+                                }
+
+                                importedPlaylists.push({
+                                    name: pl.name || "Imported Playlist",
+                                    songs: resolvedSongs,
+                                    cover: pl.thumbnail || (resolvedSongs.length > 0 ? resolvedSongs[0].img : "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300")
+                                });
+                            });
+                        }
+                        // Handle Single Playlist or Array formats
+                        else if (parsedData.name && (parsedData.songs || parsedData.tracks || parsedData.list)) {
+                            const rawSongs = parsedData.songs || parsedData.tracks || parsedData.list || [];
+                            const mappedSongs = rawSongs.map(normalizeBloomeeTrack).filter(Boolean);
+                            importedPlaylists.push({
+                                name: parsedData.name,
+                                songs: mappedSongs,
+                                cover: parsedData.cover || parsedData.image || (mappedSongs.length > 0 ? mappedSongs[0].img : "")
+                            });
+                        } else if (Array.isArray(parsedData)) {
+                            parsedData.forEach(item => {
+                                if (item.name) {
+                                    const rawSongs = item.songs || item.tracks || item.list || [];
+                                    const mappedSongs = rawSongs.map(normalizeBloomeeTrack).filter(Boolean);
+                                    importedPlaylists.push({
+                                        name: item.name,
+                                        songs: mappedSongs,
+                                        cover: item.cover || item.image || (mappedSongs.length > 0 ? mappedSongs[0].img : "")
+                                    });
+                                }
+                            });
+                        }
+
+                        if (importedPlaylists.length > 0) {
+                            importedPlaylists.forEach(newPl => {
+                                customPlaylists.push(newPl);
+                            });
+                            localStorage.setItem('customPl', JSON.stringify(customPlaylists));
+                            renderPlaylistsLibrary();
+
+                            document.getElementById('importLoadingState').style.display = 'none';
+                            document.getElementById('importSuccessText').innerText = `Successfully imported ${importedPlaylists.length} playlist(s) with tracks!`;
+                            document.getElementById('importSuccessState').style.display = 'block';
+                        } else {
+                            throw new Error("No valid playlists found in JSON.");
+                        }
+
+                    } catch (err) {
+                        console.error("JSON Import Error:", err);
+                        document.getElementById('importLoadingState').style.display = 'none';
+                        document.getElementById('importFailedText').innerText = "Invalid JSON structure or incompatible backup format.";
+                        document.getElementById('importFailedState').style.display = 'block';
+                    }
+                }, 800);
+            };
+            reader.readAsText(file);
+            event.target.value = "";
+        }
+
+        function normalizeBloomeeTrack(raw) {
+            if (!raw) return null;
+            let title = raw.title || "Unknown Song";
+            
+            let artist = "Unknown Artist";
+            if (raw.artists && Array.isArray(raw.artists) && raw.artists.length > 0) {
+                artist = raw.artists.map(a => typeof a === 'object' ? a.name : a).filter(Boolean).join(", ");
+            } else if (typeof raw.artist === 'string') {
+                artist = raw.artist;
+            }
+
+            let img = "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300";
+            if (raw.thumbnail) {
+                if (typeof raw.thumbnail === 'string') img = raw.thumbnail;
+                else if (raw.thumbnail.urlHigh) img = raw.thumbnail.urlHigh;
+                else if (raw.thumbnail.url) img = raw.thumbnail.url;
+                else if (raw.thumbnail.urlLow) img = raw.thumbnail.urlLow;
+            }
+
+            let mediaId = raw.mediaId || "";
+            let isYouTube = mediaId.includes('ytvideo') || mediaId.includes('ytmusic') || raw.isYouTube || false;
+            let id = mediaId || raw.id || Math.random();
+
+            let src = raw.src || raw.url || raw.downloadUrl || "";
+            if (isYouTube && mediaId.includes('::')) {
+                id = mediaId.split('::')[1]; 
+            }
+
+            return { id, title: cleanText(title), artist: cleanText(artist), img, src, isYouTube };
+        }
+
+        function closeImportStatusModal(goToPlaylists) {
+            document.getElementById('importStatusModal').style.display = 'none';
+            if (goToPlaylists) {
+                switchTab('playlists', document.querySelector('.sidebar-icon:nth-child(4)'));
+            }
         }
 
         function onYouTubeIframeAPIReady() {
@@ -1069,6 +1304,33 @@
             renderPlaylistTracklist();
         }
 
+        // -------------------------------------------------------------
+        // STREAM FETCHING FIX: Bloomee JSON பாடல்களில் MP3 லிங்க் இல்லாததால் 
+        // இந்த ஃபங்ஷன் பின்னணியில் API மூலம் ஸ்ட்ரீம் லிங்கை எடுத்துக்கொடுக்கும்.
+        // -------------------------------------------------------------
+        async function fetchSongStream(song) {
+            if (song.src && song.src !== "") return song.src;
+            if (song.isYouTube) return song.id;
+
+            try {
+                let cleanQuery = song.title + " " + song.artist;
+                const res = await fetch(`${API_BASE_URL}/api/search/songs?query=${encodeURIComponent(cleanQuery)}&limit=1`);
+                const data = await res.json();
+                let results = data.data?.results || data.results || [];
+                if (results.length > 0) {
+                    let dl = results[0].downloadUrl || results[0].download_url;
+                    if (Array.isArray(dl) && dl.length > 0) {
+                        let streamUrl = dl[dl.length - 1]?.url || dl[dl.length - 1]?.link;
+                        song.src = streamUrl; 
+                        return streamUrl;
+                    }
+                }
+            } catch (err) {
+                console.error("Fetch Stream Error:", err);
+            }
+            return "";
+        }
+
         async function loadSong(index) {
             if(songs.length === 0) return;
             const song = songs[index];
@@ -1076,21 +1338,24 @@
 
             document.getElementById('miniImg').src = song.img;
             document.getElementById('miniTitle').innerText = song.title;
-            document.getElementById('miniArtist').innerText = "Loading track...";
+            document.getElementById('miniArtist').innerText = "Connecting Stream...";
             document.getElementById('fullImg').src = song.img;
             document.getElementById('fullTitle').innerText = song.title;
-            document.getElementById('fullArtist').innerText = "Loading track...";
+            document.getElementById('fullArtist').innerText = "Connecting Stream...";
+
+            updateAmbientGlow(song.img);
             
             const enjoyingEl = document.getElementById('enjoyingFromName');
             if(enjoyingEl) {
                 enjoyingEl.innerText = activePlaylist ? activePlaylist.name : song.title;
             }
 
+            const streamUrl = await fetchSongStream(song);
+            document.getElementById('miniArtist').innerText = song.artist;
+            document.getElementById('fullArtist').innerText = song.artist;
+
             if (song.isYouTube) {
                 playbackMode = 'youtube';
-                document.getElementById('miniArtist').innerText = song.artist;
-                document.getElementById('fullArtist').innerText = song.artist;
-                
                 audio.pause();
                 if (currentLoadedSongId !== song.id) {
                     currentLoadedSongId = song.id;
@@ -1100,16 +1365,18 @@
                 }
             } else {
                 playbackMode = 'html5';
-                document.getElementById('miniArtist').innerText = song.artist;
-                document.getElementById('fullArtist').innerText = song.artist;
-
                 if(isYTPlayerReady && ytPlayer && ytPlayer.stopVideo) {
                     try { ytPlayer.stopVideo(); } catch(e){}
                 }
                 currentLoadedSongId = null;
 
-                if (audio.src !== song.src) {
-                    audio.src = song.src;
+                if (streamUrl) {
+                    if (audio.src !== streamUrl) {
+                        audio.src = streamUrl;
+                    }
+                    playSong();
+                } else {
+                    console.warn("Stream URL not found for track:", song.title);
                 }
             }
 
@@ -1307,7 +1574,6 @@
 
         audio.addEventListener('ended', () => { isLoop ? audio.play() : nextSong(); });
 
-        /* Global Keyboard Shortcuts Listener */
         window.addEventListener('keydown', (e) => {
             const activeTag = document.activeElement.tagName.toLowerCase();
             if(activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') return;
