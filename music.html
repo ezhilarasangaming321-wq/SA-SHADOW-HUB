@@ -879,7 +879,6 @@
             document.getElementById('importPlaylistFile').click();
         }
 
-        // Updated Bloomee Full Library & Playlist Backup Parser
         function handlePlaylistImport(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -896,7 +895,6 @@
                         const parsedData = JSON.parse(e.target.result);
                         let importedPlaylists = [];
 
-                        // Handle Bloomee Full Library Backup Format (Tracks array + Playlists array with entries)
                         if (parsedData.tracks && parsedData.playlists && Array.isArray(parsedData.playlists)) {
                             const trackMap = new Map();
                             parsedData.tracks.forEach(t => {
@@ -926,7 +924,6 @@
                                 });
                             });
                         }
-                        // Handle Single Playlist or Array formats
                         else if (parsedData.name && (parsedData.songs || parsedData.tracks || parsedData.list)) {
                             const rawSongs = parsedData.songs || parsedData.tracks || parsedData.list || [];
                             const mappedSongs = rawSongs.map(normalizeBloomeeTrack).filter(Boolean);
@@ -1775,7 +1772,6 @@
                     console.log("Error sharing playlist file:", err);
                 }
             } else {
-                // Fallback: If direct file sharing is not supported by device browser
                 downloadPlaylistJSON();
             }
             closePlaylistShareModal();
