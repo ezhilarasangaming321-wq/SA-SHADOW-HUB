@@ -251,7 +251,7 @@
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 20px; }
         .modal-card { background: var(--panel-black); border: var(--metallic-border); padding: 20px; border-radius: 12px; width: 100%; max-width: 380px; text-align: center; }
-        .modal-card input { width: 100%; padding: 8px; background: var(--card-black); border: var(--metallic-border); color: var(--white); border-radius: 6px; margin: 10px 0; outline: none; }
+        .modal-card input[type="text"] { width: 100%; padding: 8px; background: var(--card-black); border: var(--metallic-border); color: var(--white); border-radius: 6px; margin: 10px 0; outline: none; }
         .modal-card button { background: var(--neon-red); color: var(--white); border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
         #importStatusModal .modal-card {
@@ -654,6 +654,7 @@
                     <div class="hero-btn" onclick="playPlaylistShuffle()"><i class="fa-solid fa-shuffle"></i></div>
                     <div class="hero-btn play-main" onclick="playPlaylistSequential()"><i class="fa-solid fa-play" id="heroPlayIcon"></i></div>
                     <button class="download-playlist-btn" onclick="downloadEntirePlaylist()"><i class="fa-solid fa-download"></i> Download</button>
+                    <div class="hero-btn" onclick="openPlaylistShareOptions()" title="Share Playlist"><i class="fa-solid fa-share-nodes"></i></div>
                     <div class="hero-btn" onclick="likeExternalPlaylist()" id="extPlaylistLikeBtn"><i class="fa-regular fa-heart"></i></div>
                 </div>
             </div>
@@ -746,8 +747,33 @@
     <div class="modal-overlay" id="addToPlaylistSelectorModal">
         <div class="modal-card">
             <h3>Add to Playlist</h3>
-            <div id="playlistSelectorList" style="max-height: 200px; overflow-y: auto; margin: 15px 0; text-align: left;"></div>
+            <div id="playlistSelectorList" style="max-height: 280px; overflow-y: auto; margin: 15px 0; text-align: left; padding-right: 5px;"></div>
             <button onclick="closeAddToPlaylistSelector()" style="background:#333; width:100%;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Playlist Share Options Modal -->
+    <div class="modal-overlay" id="playlistShareModal">
+        <div class="modal-card">
+            <h3>Share Playlist</h3>
+            <p style="font-size:0.75rem; color:var(--text-gray); margin-bottom:15px;">Choose how you want to export or send this playlist</p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <button onclick="downloadPlaylistJSON()" style="background:var(--card-black); border:var(--metallic-border); padding:12px; border-radius:8px; text-align:left; cursor:pointer; color:var(--white); display:flex; align-items:center; gap:12px;">
+                    <i class="fa-solid fa-file-arrow-down" style="color:var(--neon-red); font-size:1.2rem;"></i>
+                    <div>
+                        <div style="font-weight:600; font-size:0.85rem;">Download .JSON File</div>
+                        <div style="font-size:0.7rem; color:var(--text-gray);">Save file to local storage</div>
+                    </div>
+                </button>
+                <button onclick="sharePlaylistJSONFile()" style="background:var(--card-black); border:var(--metallic-border); padding:12px; border-radius:8px; text-align:left; cursor:pointer; color:var(--white); display:flex; align-items:center; gap:12px;">
+                    <i class="fa-solid fa-paper-plane" style="color:var(--neon-pink); font-size:1.2rem;"></i>
+                    <div>
+                        <div style="font-weight:600; font-size:0.85rem;">Send via Apps (WhatsApp/Share)</div>
+                        <div style="font-size:0.7rem; color:var(--text-gray);">Transfer file to other contacts</div>
+                    </div>
+                </button>
+            </div>
+            <button onclick="closePlaylistShareModal()" style="background:#333; margin-top:15px; width:100%;">Cancel</button>
         </div>
     </div>
 
@@ -758,8 +784,12 @@
                 <label style="font-size:0.8rem; color:var(--text-gray);">Playlist Name</label>
                 <input type="text" id="editPlaylistNameInput" placeholder="New Playlist Name...">
                 
-                <label style="font-size:0.8rem; color:var(--text-gray); display:block; margin-top:10px;">Upload Custom Image / Logo URL</label>
-                <input type="text" id="editPlaylistCoverInput" placeholder="Image URL (https://...)">
+                <label style="font-size:0.8rem; color:var(--text-gray); display:block; margin-top:10px;">Upload Local Cover Image</label>
+                <input type="file" id="editPlaylistCoverFileInput" accept="image/*" style="display:none;" onchange="previewPlaylistCoverImage(event)">
+                <button onclick="document.getElementById('editPlaylistCoverFileInput').click()" style="background:var(--card-black); border:var(--metallic-border); color:var(--white); width:100%; margin-top:5px; padding:8px; border-radius:6px; font-weight:normal; font-size:0.8rem; cursor:pointer;"><i class="fa-solid fa-image"></i> Choose File from Storage</button>
+                <div id="playlistCoverPreviewBox" style="margin-top:10px; text-align:center; display:none;">
+                    <img id="playlistCoverPreviewImg" src="" style="width:70px; height:70px; border-radius:8px; object-fit:cover; border:1px solid var(--neon-red);">
+                </div>
             </div>
             <button onclick="savePlaylistSettings()">Save Changes</button>
             <button onclick="closePlaylistSettings()" style="background:#333; margin-top:8px; width:100%;">Cancel</button>
@@ -794,6 +824,7 @@
         let currentSearchFilter = 'all';
         let currentSearchSource = 'youtube';
         let lastSearchQuery = '';
+        let pendingPlaylistCoverBase64 = null;
 
         let currentVolume = 100;
         let isMuted = false;
@@ -1304,10 +1335,6 @@
             renderPlaylistTracklist();
         }
 
-        // -------------------------------------------------------------
-        // STREAM FETCHING FIX: Bloomee JSON பாடல்களில் MP3 லிங்க் இல்லாததால் 
-        // இந்த ஃபங்ஷன் பின்னணியில் API மூலம் ஸ்ட்ரீம் லிங்கை எடுத்துக்கொடுக்கும்.
-        // -------------------------------------------------------------
         async function fetchSongStream(song) {
             if (song.src && song.src !== "") return song.src;
             if (song.isYouTube) return song.id;
@@ -1708,6 +1735,52 @@
             localStorage.setItem('offlineSongs', JSON.stringify(downloadedSongs));
         }
 
+        // --- PLAYLIST EXPORT & SHARE FUNCTIONS ---
+        function openPlaylistShareOptions() {
+            if(!activePlaylist) return;
+            document.getElementById('playlistShareModal').style.display = 'flex';
+        }
+
+        function closePlaylistShareModal() {
+            document.getElementById('playlistShareModal').style.display = 'none';
+        }
+
+        function downloadPlaylistJSON() {
+            if(!activePlaylist) return;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(activePlaylist, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `${activePlaylist.name.replace(/\s+/g, '_')}_playlist.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            closePlaylistShareModal();
+        }
+
+        async function sharePlaylistJSONFile() {
+            if(!activePlaylist) return;
+            const jsonString = JSON.stringify(activePlaylist, null, 2);
+            const fileName = `${activePlaylist.name.replace(/\s+/g, '_')}_playlist.json`;
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const file = new File([blob], fileName, { type: 'application/json' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: activePlaylist.name,
+                        text: `Check out my playlist: ${activePlaylist.name} on Void Echo!`
+                    });
+                } catch (err) {
+                    console.log("Error sharing playlist file:", err);
+                }
+            } else {
+                // Fallback: If direct file sharing is not supported by device browser
+                downloadPlaylistJSON();
+            }
+            closePlaylistShareModal();
+        }
+
         function renderPlaylistTracklist() {
             const trackList = document.getElementById('playlistTrackList');
             if(!trackList || !activePlaylist) return;
@@ -1842,8 +1915,22 @@
             }
             const pl = customPlaylists[activePlaylistIndex];
             document.getElementById('editPlaylistNameInput').value = pl.name;
-            document.getElementById('editPlaylistCoverInput').value = pl.cover || "";
+            pendingPlaylistCoverBase64 = null;
+            document.getElementById('playlistCoverPreviewBox').style.display = 'none';
             document.getElementById('playlistSettingsModal').style.display = 'flex';
+        }
+
+        function previewPlaylistCoverImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                pendingPlaylistCoverBase64 = e.target.result;
+                document.getElementById('playlistCoverPreviewImg').src = pendingPlaylistCoverBase64;
+                document.getElementById('playlistCoverPreviewBox').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
         }
 
         function closePlaylistSettings() {
@@ -1853,17 +1940,16 @@
         function savePlaylistSettings() {
             if(activePlaylistIndex < 0) return;
             const newName = document.getElementById('editPlaylistNameInput').value.trim();
-            const newCover = document.getElementById('editPlaylistCoverInput').value.trim();
 
             if(newName) {
                 customPlaylists[activePlaylistIndex].name = newName;
                 activePlaylist.name = newName;
                 document.getElementById('heroTitle').innerText = newName;
             }
-            if(newCover) {
-                customPlaylists[activePlaylistIndex].cover = newCover;
-                activePlaylist.cover = newCover;
-                document.getElementById('heroCoverImg').src = newCover;
+            if(pendingPlaylistCoverBase64) {
+                customPlaylists[activePlaylistIndex].cover = pendingPlaylistCoverBase64;
+                activePlaylist.cover = pendingPlaylistCoverBase64;
+                document.getElementById('heroCoverImg').src = pendingPlaylistCoverBase64;
             }
 
             localStorage.setItem('customPl', JSON.stringify(customPlaylists));
